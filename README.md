@@ -11,12 +11,13 @@ Status: the harness is in place; Part 1 and Part 2 land next.
 
 ```
 npm ci
-npm run verify        # lint, format, types, both suites, docs-to-tests traceability
-npm run test:api      # Part 1 (the stub starts itself)
-npm run test:e2e      # Part 2 (live demo by default)
+npm run verify                      # lint, format, types, both suites, docs-to-tests traceability
+npm run test:api                    # Part 1 on TEST_ENV=local (the stub starts itself)
+npm run test:e2e                    # Part 2 on TEST_ENV=demo
+TEST_ENV=staging npm run test:api   # any row of config/environments.ts; production is refused
 ```
 
-Node 22.22 or newer (24 recommended). Playwright browsers once: `npx playwright install chromium`.
+Node 22.22 or newer (24 recommended). Playwright browsers once: `npx playwright install chromium`. Copy `.env.example` to `.env` to pin `TEST_ENV`, override one URL or add browsers.
 
 ## Practices shown
 
@@ -28,7 +29,7 @@ Node 22.22 or newer (24 recommended). Playwright browsers once: `npx playwright 
 | 4 | A tenant per test: parallel-safe, no shared fixtures, exact assertions | `api-tests/src/fixtures.ts`, `docs/decisions/0002` |
 | 5 | Table-driven matrices for configuration combinations and invalid transitions | `api-tests/tests/workflow/` |
 | 6 | State-aware teardown: withdraw then delete, close what cannot be deleted and say so | `api-tests/src/fixtures.ts` |
-| 7 | One suite, several targets: in-process stub or `BASE_URL` | `api-tests/playwright.config.ts`, `docs/decisions/0001` |
+| 7 | One suite, named environments: `TEST_ENV` picks local, demo or staging, production is refused, one URL can be overridden | `config/environments.ts`, `docs/decisions/0006` |
 | 8 | The 4-file chain selectors -> pages -> fixtures -> specs, import direction enforced | `e2e-tests/src/`, `eslint.config.mjs` |
 | 9 | Shared-environment discipline: API-seeded preconditions, session injected without the UI, assertions scoped to own data | `e2e-tests/src/fixtures/`, `docs/decisions/0004` |
 | 10 | Docs tied to tests by scenario ID, both directions, in one command | `scripts/check-traceability.ts` |

@@ -1,7 +1,6 @@
 # e2e-tests: rules
 
-Stack: Playwright with TypeScript. Target: `https://conduit-realworld-example-app.fly.dev` by default, `BASE_URL` for another one
-(Conduit run locally from its README answers on `http://localhost:3000`). Run: `npm test`; `npm run test:ui` to watch.
+Stack: Playwright with TypeScript. Target: `TEST_ENV=demo` (the public demo) by default, `TEST_ENV=local` for a Conduit run from its README on `localhost:3000`, `WEB_BASE_URL` for an ad-hoc one; rows live in `config/environments.ts`. Run: `npm test`; `npm run test:ui` to watch; `BROWSERS=chromium,firefox npm test` for more browsers.
 
 ## The 4-file chain (dependency direction, enforced)
 

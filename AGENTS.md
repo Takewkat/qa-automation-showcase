@@ -17,11 +17,25 @@ Every rule here is enforced by a tool; its error text is the feedback you get, a
 ```
 npm ci                 # once, from the root (npm workspaces)
 npm run verify         # done = exit 0
-npm run test:api       # Part 1, stub started by Playwright
-npm run test:e2e       # Part 2, live demo
+npm run test:api       # Part 1, TEST_ENV=local by default (stub started by Playwright)
+npm run test:e2e       # Part 2, TEST_ENV=demo by default
+TEST_ENV=staging npm run test:api   # any row of config/environments.ts
 npm run lint:fix       # eslint --fix + prettier
 npm run traceability   # docs <-> tests by scenario ID
 ```
+
+## Environments
+
+`config/environments.ts` is the one table of targets; `TEST_ENV` picks the row, `.env` at the root is read automatically.
+
+| TEST_ENV | api | web | Note |
+|---|---|---|---|
+| `local` | stub on `127.0.0.1:8080`, started by Playwright | Conduit on `localhost:3000` | API fallback |
+| `demo` | - | `conduit-realworld-example-app.fly.dev` | E2E fallback |
+| `staging` | `api.staging.example.com` (from the spec) | - | |
+| `production` | listed, refused | - | never a test target |
+
+`API_BASE_URL` / `WEB_BASE_URL` override one target for an ad-hoc run. `BROWSERS=chromium,firefox,webkit` picks the E2E projects. Add an environment: one row in the table, nothing else.
 
 ## Rules, each with its check
 

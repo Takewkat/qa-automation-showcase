@@ -1,7 +1,7 @@
 # api-tests: rules
 
 Stack: TypeScript on the Playwright test runner (`request` fixture), ajv contract validation from `spec/job-offer-swagger.yml`, Hono reference stub in `stub/`.
-Run: `npm test` (Playwright starts the stub as `webServer`); `BASE_URL=https://host/api/v1 npm test` targets a deployment and starts nothing.
+Run: `npm test` (`TEST_ENV=local`: Playwright starts the stub as `webServer`); `TEST_ENV=staging npm test` targets that row of `config/environments.ts` and starts nothing; `API_BASE_URL=https://host/api/v1 npm test` for an ad-hoc target.
 
 ## Paths
 

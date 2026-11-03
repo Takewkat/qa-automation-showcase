@@ -21,7 +21,7 @@ A spec reads as the scenario. Everything it needs arrives through fixtures. A se
 | Table-driven tests for combinations and invalid pairs | `api-tests/tests/workflow/` | 8 configurations and the invalid transitions in two readable tables |
 | Hermetic tests: a sandbox per test (tenant UUID, run-id data), state-aware teardown | fixtures of both parts | no order dependence, exact assertions |
 | Spec-driven contract validation on every read | `api-tests/src/contract.ts` | the response schema is looked up by path, method and status in the OpenAPI document and validated with ajv |
-| Target chosen by configuration: in-process `webServer` or `BASE_URL` | `api-tests/playwright.config.ts`, `e2e-tests/playwright.config.ts` | same suite, several targets, no code branch |
+| Named environments: one table of targets, `TEST_ENV` picks the row, production refused | `config/environments.ts`, both `playwright.config.ts` | same suite on local, demo, staging; the stub starts only for local; adding an environment is one row |
 | Ports and adapters in the stub: pure domain, in-memory store, HTTP adapter | `api-tests/stub/` | the state machine is a pure function, the HTTP layer is thin |
 | Template Method in `BasePage` | `e2e-tests/src/pages/base.page.ts` | one navigation and one error context for every page |
 
