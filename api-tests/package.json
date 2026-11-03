@@ -8,7 +8,7 @@
     "test:smoke": "playwright test --grep @smoke",
     "stub": "tsx stub/server.ts",
     "gen:types": "openapi-typescript spec/job-offer-swagger.yml -o src/generated/schema.d.ts",
-    "report": "playwright show-report"
+    "report": "playwright show-report ../reports/api/html"
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "13.1.0",

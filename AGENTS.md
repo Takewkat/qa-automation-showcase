@@ -7,7 +7,8 @@ Every rule here is enforced by a tool; its error text is the feedback you get, a
 
 - `api-tests/` Part 1: Job Offer Microservice API tests (Playwright `request`, TypeScript) against a Hono reference stub, or any deployment through `BASE_URL`.
 - `e2e-tests/` Part 2: Conduit RealWorld E2E flows (Playwright), live demo by default.
-- `scripts/verify.sh` the "done" gate; `scripts/check-traceability.ts` ties scenario tables to tests by ID.
+- `config/` the environments table and the reporter set, shared by both parts.
+- `scripts/verify.sh` the "done" gate; `scripts/check-traceability.ts` ties scenario tables to tests by ID; `scripts/scenario-report.ts` ties results to them.
 - `docs/architecture.md` the patterns and the dependency direction; `docs/decisions/` why they were chosen.
 - `.claude/` Claude Code surface (hooks, skills, reviewer), described at the end of this file.
 - `HOMEWORK.md` the brief and `api-tests/spec/` the OpenAPI spec, as received, transcribed to ASCII (arrows, dashes, one accented example); schemas untouched. Inputs, never edited.
@@ -36,6 +37,10 @@ npm run traceability   # docs <-> tests by scenario ID
 | `production` | listed, refused | - | never a test target |
 
 `API_BASE_URL` / `WEB_BASE_URL` override one target for an ad-hoc run. `BROWSERS=chromium,firefox,webkit` picks the E2E projects. Add an environment: one row in the table, nothing else.
+
+## Reports
+
+Every run writes under `reports/<part>/` (`config/reporting.ts`, ignored by git): `html/` with trace, screenshot and video of failures (`npm run report:api`, `report:e2e`), `results.json` and `junit.xml` for machines, `artifacts/`. `npm run report:scenarios` joins `results.json` with each part's scenario table into `reports/scenarios.md`: one line per scenario ID with priority and worst status, totals per priority, exit 1 when a P1 scenario did not pass. It is the last step of `npm run verify`.
 
 ## Rules, each with its check
 

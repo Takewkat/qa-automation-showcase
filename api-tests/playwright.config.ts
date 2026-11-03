@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 import { baseUrl } from "../config/environments";
+import { reportsFor } from "../config/reporting";
 
 const { environment, url } = baseUrl("api", "local");
 
@@ -15,7 +16,11 @@ export default defineConfig({
   testDir: "tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  reporter: [["list"], ["html", { open: "never" }]],
-  use: { baseURL: url, extraHTTPHeaders: { accept: "application/json" } },
+  ...reportsFor("api"),
+  use: {
+    baseURL: url,
+    extraHTTPHeaders: { accept: "application/json" },
+    trace: "retain-on-failure",
+  },
   webServer: environment === "local" ? STUB : undefined,
 });

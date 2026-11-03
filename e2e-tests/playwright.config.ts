@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 import { baseUrl } from "../config/environments";
+import { reportsFor } from "../config/reporting";
 
 const { url } = baseUrl("web", "demo");
 
@@ -25,7 +26,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   timeout: TEST_TIMEOUT_MS,
   expect: { timeout: EXPECT_TIMEOUT_MS },
-  reporter: [["list"], ["html", { open: "never" }]],
+  ...reportsFor("e2e"),
   use: {
     baseURL: url,
     trace: "retain-on-failure",

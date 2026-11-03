@@ -19,6 +19,9 @@
     "test:api": "npm test --workspace api-tests",
     "test:e2e": "npm test --workspace e2e-tests",
     "traceability": "tsx scripts/check-traceability.ts",
+    "report:scenarios": "tsx scripts/scenario-report.ts",
+    "report:api": "playwright show-report reports/api/html",
+    "report:e2e": "playwright show-report reports/e2e/html",
     "verify": "bash scripts/verify.sh"
   },
   "devDependencies": {

@@ -8,6 +8,6 @@
     "test:smoke": "playwright test --grep @smoke",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
-    "report": "playwright show-report"
+    "report": "playwright show-report ../reports/e2e/html"
   }
 }

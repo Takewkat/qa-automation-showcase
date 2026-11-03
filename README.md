@@ -15,6 +15,8 @@ npm run verify                      # lint, format, types, both suites, docs-to-
 npm run test:api                    # Part 1 on TEST_ENV=local (the stub starts itself)
 npm run test:e2e                    # Part 2 on TEST_ENV=demo
 TEST_ENV=staging npm run test:api   # any row of config/environments.ts; production is refused
+npm run report:scenarios            # reports/scenarios.md: result per scenario ID and priority
+npm run report:api                  # html report of the last API run (report:e2e for Part 2)
 ```
 
 Node 22.22 or newer (24 recommended). Playwright browsers once: `npx playwright install chromium`. Copy `.env.example` to `.env` to pin `TEST_ENV`, override one URL or add browsers.
@@ -34,7 +36,8 @@ Node 22.22 or newer (24 recommended). Playwright browsers once: `npx playwright 
 | 9 | Shared-environment discipline: API-seeded preconditions, session injected without the UI, assertions scoped to own data | `e2e-tests/src/fixtures/`, `docs/decisions/0004` |
 | 10 | Docs tied to tests by scenario ID, both directions, in one command | `scripts/check-traceability.ts` |
 | 11 | Agent-ready: one source of rules, machine-enforced, scaffolding as executable recipes | `AGENTS.md`, `.claude/` |
-| 12 | Honest reporting: time spent, assumptions, limits, how AI was used | below |
+| 12 | Run reports keyed by scenario ID: html, junit and json under `reports/`, one line per scenario with its priority, a P1 gate | `config/reporting.ts`, `scripts/scenario-report.ts`, `docs/decisions/0007` |
+| 13 | Honest reporting: time spent, assumptions, limits, how AI was used | below |
 
 Patterns and the dependency direction: `docs/architecture.md`. Decisions and trade-offs: `docs/decisions/`.
 
