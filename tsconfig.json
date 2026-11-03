@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@api/*": ["api-tests/src/*"],
+      "@e2e/*": ["e2e-tests/src/*"]
+    }
+  },
+  "include": ["scripts/**/*.ts", "api-tests/**/*.ts", "e2e-tests/**/*.ts"],
+  "exclude": ["**/node_modules", "**/test-results", "**/playwright-report"]
+}

@@ -1,0 +1,21 @@
+import { expectCall } from "@api/contract";
+import { expect, test } from "@api/fixtures";
+import { completeOffer } from "@api/payloads";
+
+/** One row, one test; the table sits next to the tests that read it. */
+const ROWS = [
+  { title: "a".repeat(200), status: 201 },
+  { title: "a".repeat(201), status: 422 },
+] as const;
+
+test("XXX-000 creates a complete offer and reads it back", async ({ api, offers }) => {
+  const created = await offers.create();
+  const fetched = await expectCall(await api.getJobOffer(created.id), 200);
+  expect(fetched.title).toBe(created.title);
+});
+
+for (const row of ROWS) {
+  test(`XXX-001 a title of ${row.title.length} chars is ${row.status}`, async ({ api }) => {
+    await expectCall(await api.createJobOffer(completeOffer({ title: row.title })), row.status);
+  });
+}

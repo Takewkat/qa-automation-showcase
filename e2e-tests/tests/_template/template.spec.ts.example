@@ -1,0 +1,11 @@
+import { test } from "@e2e/fixtures/test";
+import { articleDraft } from "@e2e/test-data/factories";
+
+/** A spec reads as the user story: fixtures bring the pages, factories bring unique data. */
+test("XXX-000 publishes an item and sees it listed", async ({ authenticatedPage, templatePage, track }) => {
+  const draft = articleDraft();
+  await templatePage.open();
+  await templatePage.publish(draft.title);
+  track(draft.title);
+  await templatePage.assertItemVisible(draft.title);
+});

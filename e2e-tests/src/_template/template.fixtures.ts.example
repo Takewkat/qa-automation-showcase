@@ -1,0 +1,12 @@
+import type { Fixtures, Page } from "@playwright/test";
+
+import { TemplatePage } from "@e2e/pages/template.page";
+
+/** Page objects of one domain; chained in src/fixtures/test.ts with .extend<TemplateFixtures>(templateFixtures). */
+export type TemplateFixtures = { templatePage: TemplatePage };
+
+export const templateFixtures: Fixtures<TemplateFixtures, object, { page: Page }> = {
+  templatePage: async ({ page }, use) => {
+    await use(new TemplatePage(page));
+  },
+};
