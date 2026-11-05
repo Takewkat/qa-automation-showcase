@@ -38,9 +38,6 @@ const noImports = (files, group, message) => ({
   rules: { "no-restricted-imports": ["error", { patterns: [{ group, message }] }] },
 });
 
-/** Checks a spec makes through its fixtures: expectCall() and the assert* methods of page objects. */
-const ASSERTIONS = { assertFunctionNames: ["expectCall"], assertFunctionPatterns: ["^assert"] };
-
 const ORACLE = "the oracle stays independent";
 
 export default tseslint.config(
@@ -77,10 +74,11 @@ export default tseslint.config(
     rules: {
       ...playwright.configs["flat/recommended"].rules,
       "max-lines": lines(60),
-      "playwright/expect-expect": ["error", ASSERTIONS],
+      "playwright/expect-expect": ["error", { assertFunctionPatterns: ["^assert"] }],
       "playwright/no-skipped-test": ["error", { allowConditional: true }],
     },
   },
+  { files: ["api-tests/tests/**/*.ts"], rules: { "playwright/expect-expect": "off" } },
   noSyntax(
     ["e2e-tests/tests/**/*.ts"],
     {
@@ -106,7 +104,7 @@ export default tseslint.config(
     },
     {
       selector: "CallExpression[callee.property.name=/^(json|status|text)$/]",
-      message: "Read responses through expectCall(), which validates the contract (AGENTS.md)",
+      message: "Specs never read a response: the api fixture asserts and validates it (AGENTS.md)",
     },
   ),
   noImports(

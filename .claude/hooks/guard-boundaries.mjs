@@ -10,7 +10,7 @@ const RULES = [
   {
     when: /api-tests\/tests\/.*\.ts$/,
     deny: /\brequest\.|\.json\(\)|\.status\(\)|from ["'][^"']*stub\//,
-    rule: "specs call the api fixture and read bodies through expectCall(); never request, .json(), .status() or the stub",
+    rule: "specs call the api fixture, which asserts the status and validates the body; never request, .json(), .status() or the stub",
   },
   {
     when: /api-tests\/src\/.*\.ts$/,

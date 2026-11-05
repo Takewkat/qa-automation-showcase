@@ -9,9 +9,9 @@ Rules: the table "Rules, each with its check" in the root `AGENTS.md`. Below: th
 | Path | Holds |
 |---|---|
 | `spec/job-offer-swagger.yml`, `src/generated/schema.d.ts` | the contract, verbatim, and its types (`npm run gen:types`, committed) |
-| `src/client.ts` | `OPERATIONS` table from the spec and the `JobOfferApi` facade: one method per operation, returns an `ApiCall` |
-| `src/contract.ts` | `expectCall(call, status)`: asserts the status, validates the body against the spec, returns it typed |
-| `src/fixtures.ts` | `test` with `companyId`, `api`, `otherApi`, `anonApi`, `offers` (factory with teardown), `configure` |
+| `src/client.ts` | `OPERATIONS` table from the spec and the `JobOfferApi` facade: one method per operation, asserts its success status or `{ expect: <status> }`, validates the body, returns it typed |
+| `src/contract.ts` | `validate(operation, status, body)`: the response schema by path, method and status from the spec, ajv. Called by the facade, never by a spec |
+| `src/fixtures.ts` | `test` with `companyId`, `api`, `otherApi`, `anonApi`, `offers` (factory; teardown withdraws and deletes, warns on a leftover), `configure` |
 | `src/payloads.ts` | request builders |
 | `src/workflow.ts` | `advance()` drives an offer to a status. Specs never call it, they use `offers.createIn(status, flags)` |
 | `src/expected-paths.ts` | the oracle, written from the spec |
@@ -35,7 +35,7 @@ Rules: the table "Rules, each with its check" in the root `AGENTS.md`. Below: th
 | You see | Cause | Fix |
 |---|---|---|
 | `no schema for 418 on POST /job-offers` | status not documented for that operation | assert a documented status. If the spec is wrong, say so in `docs/test-scenarios.md`, never special-case |
-| `expectCall: POST /job-offers expected 201, received 422 {...}` | payload fails validation | read `fieldErrors` in the message. Fix the builder, not the assertion |
+| `POST /job-offers: expected 201, received 422 {...}` | payload fails validation | read `fieldErrors` in the message. Fix the builder, not the assertion |
 | `Tests and src never import stub/: the oracle stays independent` | oracle independence | put the expected value in `src/expected-paths.ts` |
 | `webServer` timeout | port 8080 busy or the stub crashed | `npm run stub` alone shows the error |
 | `Test has unknown parameter "offers"` | spec imports `test` from `@playwright/test` | import `test` from `@api/fixtures` |
