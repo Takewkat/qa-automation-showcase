@@ -103,7 +103,7 @@ export default tseslint.config(
       message: "Specs call the api fixture (JobOfferApi), never request directly (AGENTS.md)",
     },
     {
-      selector: "CallExpression[callee.property.name=/^(json|status|text)$/]",
+      selector: "CallExpression[callee.property.name=/^(json|status|text|send)$/]",
       message: "Specs never read a response: the api fixture asserts and validates it (AGENTS.md)",
     },
   ),

@@ -20,7 +20,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   ...reportsFor("api"),
   use: {
-    baseURL: url,
+    baseURL: url.replace(/\/?$/, "/"),
     extraHTTPHeaders: { accept: "application/json" },
     trace: "retain-on-failure",
   },
