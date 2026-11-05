@@ -29,7 +29,7 @@ The mutations that can reach a live listing.
 
 ## Workflow state machine (`tests/workflow/`)
 
-The product logic: 8 paths, the guards, and the gate on incomplete offers. Expected statuses come from `src/expected-paths.ts`, written from the spec, never from the stub.
+The product logic: 8 paths, the guards, and the gate on incomplete offers. Expected statuses come from `src/oracle.ts`, written from the spec, never from the stub.
 
 | ID | Scenario | Preconditions | Request | Expected Status | Expected Result | Priority |
 |---|---|---|---|---|---|---|
@@ -101,3 +101,4 @@ Where the spec is silent or ambiguous, the suite reads it this way. Each one is 
 - A18 Timestamps are ISO 8601 with offset.
 - A19 No optimistic locking: concurrency is out of scope.
 - A20 With `COMPANY_ADDRESS`, an `address` sent is dropped from the response.
+- A21 A documented response header is expected on every response of that status, `required` or not: the spec documents `Location` on 201 without `required: true`, and a header nobody sends has no reason to be documented.

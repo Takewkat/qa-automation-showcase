@@ -1,36 +1,33 @@
 import { randomUUID } from "node:crypto";
 
-import type { JobOfferApi } from "@api/client";
-import { test } from "@api/fixtures";
-import { completeOffer } from "@api/payloads";
+import { CreateJobOffer, GetJobOffer, ListJobOffers } from "@job-offer/api";
+import { type Fixtures, test } from "@job-offer/fixtures/fixtures";
+import { completeOffer } from "@job-offer/test-data/job-offers";
 
-type Caller = "anonApi" | "badHeaderApi";
+type Callers = Pick<Fixtures, "anonymous" | "malformedHeader">;
+
 /** One call per row without a usable company: refused before any lookup. */
-const ROWS: { name: string; caller: Caller; call: (api: JobOfferApi) => Promise<unknown> }[] = [
+const REFUSED: { name: string; call: (callers: Callers) => Promise<unknown> }[] = [
   {
     name: "list without a header",
-    caller: "anonApi",
-    call: (a) => a.listJobOffers({}, { expect: 401 }),
+    call: ({ anonymous }) => new ListJobOffers(anonymous).list({}, 401),
   },
   {
     name: "create without a header",
-    caller: "anonApi",
-    call: (a) => a.createJobOffer(completeOffer(), { expect: 401 }),
+    call: ({ anonymous }) => new CreateJobOffer(anonymous).create(completeOffer(), 401),
   },
   {
     name: "get without a header",
-    caller: "anonApi",
-    call: (a) => a.getJobOffer(randomUUID(), { expect: 401 }),
+    call: ({ anonymous }) => new GetJobOffer(anonymous).get(randomUUID(), 401),
   },
   {
     name: "list with a malformed header",
-    caller: "badHeaderApi",
-    call: (a) => a.listJobOffers({}, { expect: 400 }),
+    call: ({ malformedHeader }) => new ListJobOffers(malformedHeader).list({}, 400),
   },
 ];
 
-for (const row of ROWS) {
-  test(`TEN-001 ${row.name} is refused`, async ({ anonApi, badHeaderApi }) => {
-    await row.call({ anonApi, badHeaderApi }[row.caller]);
+for (const row of REFUSED) {
+  test(`TEN-001 ${row.name} is refused`, async ({ anonymous, malformedHeader }) => {
+    await row.call({ anonymous, malformedHeader });
   });
 }

@@ -100,11 +100,12 @@ export default tseslint.config(
     ["api-tests/tests/**/*.ts"],
     {
       selector: 'MemberExpression[object.name="request"]',
-      message: "Specs call the api fixture (JobOfferApi), never request directly (AGENTS.md)",
+      message: "Specs never touch request; endpoint classes send it (AGENTS.md)",
     },
     {
-      selector: "CallExpression[callee.property.name=/^(json|status|text|send)$/]",
-      message: "Specs never read a response: the api fixture asserts and validates it (AGENTS.md)",
+      selector:
+        "CallExpression[callee.property.name=/^(json|status|text|request|getResponseBody)$/]",
+      message: "Specs call endpoint methods, never the request primitives (AGENTS.md)",
     },
   ),
   noImports(
@@ -114,7 +115,7 @@ export default tseslint.config(
   ),
   noImports(
     ["api-tests/stub/**/*.ts"],
-    ["@api/*", "**/src/**"],
+    ["@job-offer/*", "**/src/**"],
     `stub/ never imports the suite: ${ORACLE}`,
   ),
   {

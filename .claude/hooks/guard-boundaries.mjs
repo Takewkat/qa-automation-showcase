@@ -9,8 +9,8 @@ const RULES = [
   },
   {
     when: /api-tests\/tests\/.*\.ts$/,
-    deny: /\brequest\.|\.json\(\)|\.status\(\)|from ["'][^"']*stub\//,
-    rule: "specs call the api fixture, which asserts the status and validates the body; never request, .json(), .status() or the stub",
+    deny: /\brequest\.|\.json\(\)|\.status\(\)|\.request\(|\.getResponseBody\(|from ["'][^"']*stub\//,
+    rule: "specs call endpoint methods (create, get, ...), which check status and schema; never request, .json(), .status(), .request(), .getResponseBody() or the stub",
   },
   {
     when: /api-tests\/src\/.*\.ts$/,
@@ -19,7 +19,7 @@ const RULES = [
   },
   {
     when: /api-tests\/stub\/.*\.ts$/,
-    deny: /from ["'](@api\/|[^"']*\/src\/)/,
+    deny: /from ["'](@job-offer\/|[^"']*\/src\/)/,
     rule: "stub/ never imports the suite",
   },
 ];

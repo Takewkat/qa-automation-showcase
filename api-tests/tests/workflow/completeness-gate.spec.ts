@@ -1,31 +1,47 @@
-import { expect, test } from "@api/fixtures";
-import { incompleteOffer, salary } from "@api/payloads";
+import {
+  type ErrorResponse,
+  GetJobOffer,
+  TransitionJobOffer,
+  UpdateJobOffer,
+} from "@job-offer/api";
+import { ERROR_CODES } from "@job-offer/enum/job-offer.enum";
+import { expect, test } from "@job-offer/fixtures/fixtures";
+import { incompleteOffer, salary } from "@job-offer/test-data/job-offers";
 
 test("WFL-003 submit of an incomplete offer is refused and stays in DRAFT", async ({
-  api,
+  company,
   offers,
 }) => {
   const offer = await offers.create(incompleteOffer());
   expect(offer.isComplete).toBe(false);
-  const error = await api.transitionJobOffer(offer.id, "submit", {}, { expect: 422 });
-  expect(error).toMatchObject({ code: "INCOMPLETE_OFFER" });
+  const error = await new TransitionJobOffer(company).transition<ErrorResponse>(
+    offer.id,
+    "submit",
+    {},
+    422,
+  );
+  expect(error).toMatchObject({ code: ERROR_CODES.incompleteOffer });
   expect(error.details?.missingFields).toContain("compensation.salaryEntries");
-  expect((await api.getJobOffer(offer.id)).status).toBe("DRAFT");
+  const untouched = await new GetJobOffer(company).get(offer.id);
+  expect(untouched.status).toBe("DRAFT");
 });
 
 test("WFL-004 partial save holds an incomplete offer in TO_FINALIZE until it is complete", async ({
-  api,
+  company,
   configure,
   offers,
 }) => {
   await configure({ partialSaveEnabled: true });
   const offer = await offers.create(incompleteOffer());
-  expect((await api.transitionJobOffer(offer.id, "submit")).status).toBe("TO_FINALIZE");
-  const gate = await api.transitionJobOffer(offer.id, "finalize", {}, { expect: 422 });
-  expect(gate).toMatchObject({ code: "INCOMPLETE_OFFER" });
-  const completed = await api.updateJobOffer(offer.id, {
+  const transition = new TransitionJobOffer(company);
+  const submitted = await transition.transition(offer.id, "submit");
+  expect(submitted.status).toBe("TO_FINALIZE");
+  const gate = await transition.transition<ErrorResponse>(offer.id, "finalize", {}, 422);
+  expect(gate).toMatchObject({ code: ERROR_CODES.incompleteOffer });
+  const completed = await new UpdateJobOffer(company).update(offer.id, {
     compensation: { salaryEntries: [salary()] },
   });
   expect(completed.isComplete).toBe(true);
-  expect((await api.transitionJobOffer(offer.id, "finalize")).status).toBe("PUBLISHED");
+  const published = await transition.transition(offer.id, "finalize");
+  expect(published.status).toBe("PUBLISHED");
 });

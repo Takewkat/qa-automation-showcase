@@ -12,16 +12,16 @@ type Env = { Variables: { companyId: string } };
 const now = (): string => new Date().toISOString();
 const fail = (status: ContentfulStatusCode, body: object): HTTPException =>
   new HTTPException(status, { res: Response.json(body, { status }) });
-const reject = (status: ContentfulStatusCode, code: string, message: string, details?: object) =>
+const httpError = (status: ContentfulStatusCode, code: string, message: string, details?: object) =>
   fail(status, { code, message, details });
-const badRequest = (message: string): HTTPException => reject(400, "BAD_REQUEST", message);
+const badRequest = (message: string): HTTPException => httpError(400, "BAD_REQUEST", message);
 const invalidState = (verb: string, offer: domain.Offer, allowedStatuses: domain.Status[]) =>
-  reject(409, "INVALID_STATE", `Cannot ${verb} job offer in ${offer.status} status`, {
+  httpError(409, "INVALID_STATE", `Cannot ${verb} job offer in ${offer.status} status`, {
     currentStatus: offer.status,
     allowedStatuses,
   });
 const invalidTransition = (offer: domain.Offer, action: domain.Action): HTTPException =>
-  reject(400, "INVALID_TRANSITION", `Cannot perform '${action}' from ${offer.status} status`, {
+  httpError(400, "INVALID_TRANSITION", `Cannot perform '${action}' from ${offer.status} status`, {
     currentStatus: offer.status,
     requestedAction: action,
     validActions: domain.validActions(offer.status),
@@ -50,7 +50,7 @@ async function parseTransition(c: Context<Env>, action: domain.Action) {
   if (result.success) return result.data;
   const missingFields = schema.missingOf(result.error);
   if (missingFields.length === 0) throw fail(422, schema.validationError(result.error));
-  throw reject(422, "VALIDATION_ERROR", "Transition requirements not met", { missingFields });
+  throw httpError(422, "VALIDATION_ERROR", "Transition requirements not met", { missingFields });
 }
 
 /** The company's offer the path names: a malformed id is a 400, an unknown or another company's a 404. */
@@ -58,7 +58,7 @@ function offerOf(c: Context<Env>): domain.Offer {
   const id = c.req.param("jobOfferId") ?? "";
   if (!schema.isUuid(id)) throw badRequest(`Invalid job offer id: '${id}'`);
   const offer = store.findOffer(c.get("companyId"), id);
-  if (!offer) throw reject(404, "NOT_FOUND", `Job offer not found: ${id}`);
+  if (!offer) throw httpError(404, "NOT_FOUND", `Job offer not found: ${id}`);
   return offer;
 }
 
@@ -72,7 +72,7 @@ function actionOf(c: Context<Env>): domain.Action {
 /** The path's company, which must be the header's: anything else is a 403 before any lookup. */
 function companyOf(c: Context<Env>): string {
   const id = c.req.param("companyId") ?? "";
-  if (id !== c.get("companyId")) throw reject(403, "FORBIDDEN", `Not your company: ${id}`);
+  if (id !== c.get("companyId")) throw httpError(403, "FORBIDDEN", `Not your company: ${id}`);
   return id;
 }
 
@@ -104,7 +104,7 @@ const api = app.basePath("/api/v1");
 
 api.use(async (c, next) => {
   const header = c.req.header("X-Company-Id");
-  if (!header) throw reject(401, "UNAUTHORIZED", "Missing required header: X-Company-Id");
+  if (!header) throw httpError(401, "UNAUTHORIZED", "Missing required header: X-Company-Id");
   if (!schema.isUuid(header)) throw badRequest(`Invalid X-Company-Id header: '${header}'`);
   c.set("companyId", header);
   await next();
@@ -159,7 +159,9 @@ api.post("/job-offers/:jobOfferId/transitions/:action", async (c) => {
   const body = await parseTransition(c, action);
   const missingFields = domain.blockers(offer, action, flags);
   if (missingFields.length > 0) {
-    throw reject(422, "INCOMPLETE_OFFER", "Cannot submit incomplete job offer", { missingFields });
+    throw httpError(422, "INCOMPLETE_OFFER", `Cannot ${action} incomplete job offer`, {
+      missingFields,
+    });
   }
   const next = store.saveOffer(domain.transition(offer, flags, action, now()));
   store.appendHistory(offer.id, domain.historyEntry(offer, next, action, c.get("companyId"), body));

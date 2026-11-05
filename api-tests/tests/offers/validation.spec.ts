@@ -1,8 +1,9 @@
-import type { Request } from "@api/client";
-import { expect, test } from "@api/fixtures";
-import { completeOffer, customLocation, salary } from "@api/payloads";
+import { CreateJobOffer, type CreateJobOfferRequest, type ValidationError } from "@job-offer/api";
+import { ERROR_CODES } from "@job-offer/enum/job-offer.enum";
+import { expect, test } from "@job-offer/fixtures/fixtures";
+import { completeOffer, customLocation, salary } from "@job-offer/test-data/job-offers";
 
-type Body = Request<"createJobOffer">;
+type Body = CreateJobOfferRequest;
 
 /** Each row: a body the spec refuses and the last segment of the field it names. */
 const REJECTED: { name: string; body: Body; field: string }[] = [
@@ -32,12 +33,11 @@ const REJECTED: { name: string; body: Body; field: string }[] = [
 ];
 
 for (const row of REJECTED) {
-  test(`VAL-001 ${row.name} is refused and names the field`, async ({ api }) => {
-    const error = await api.createJobOffer(row.body, { expect: 422 });
-    expect(error.code).toBe("VALIDATION_ERROR");
-    expect(error.fieldErrors.map((e) => e.field)).toContainEqual(
-      expect.stringMatching(`${row.field}$`),
-    );
+  test(`VAL-001 ${row.name} is refused and names the field`, async ({ company }) => {
+    const error = await new CreateJobOffer(company).create<ValidationError>(row.body, 422);
+    expect(error.code).toBe(ERROR_CODES.validation);
+    const fields = error.fieldErrors.map((fieldError) => fieldError.field);
+    expect(fields).toContainEqual(expect.stringMatching(`${row.field}$`));
   });
 }
 

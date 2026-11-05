@@ -1,10 +1,12 @@
-import { expect, test } from "@api/fixtures";
+import { TransitionJobOffer } from "@job-offer/api";
+import { expect, test } from "@job-offer/fixtures/fixtures";
 
-test("WFL-007 close then reopen", async ({ api, offers }) => {
+test("WFL-007 close then reopen", async ({ company, offers }) => {
   const offer = await offers.createIn("PUBLISHED");
-  const closed = await api.transitionJobOffer(offer.id, "close");
+  const transition = new TransitionJobOffer(company);
+  const closed = await transition.transition(offer.id, "close");
   expect(closed).toMatchObject({ status: "CLOSED", availableTransitions: ["reopen"] });
   expect(closed.closedAt).not.toBeNull();
-  const reopened = await api.transitionJobOffer(offer.id, "reopen");
+  const reopened = await transition.transition(offer.id, "reopen");
   expect(reopened).toMatchObject({ status: "PUBLISHED", availableTransitions: ["close"] });
 });

@@ -35,8 +35,8 @@ Run Claude Code from this folder: hooks and settings load from the primary worki
 | Rule | Checked by | What you see |
 |---|---|---|
 | E2E specs call page objects through fixtures, never `page`, a locator or a selector | eslint `no-restricted-syntax`, `no-restricted-imports`; hook `guard-boundaries` | `Specs drive page objects from fixtures, never page directly`, `Specs call page-object methods from fixtures, never a locator`, `Specs import fixtures and test-data only`, `guard-boundaries:` |
-| API specs call the `api` fixture, which asserts the status and validates the body against the spec; never `request`, `.json()`, `.status()` | eslint `no-restricted-syntax`; hook `guard-boundaries` | `Specs call the api fixture (JobOfferApi), never request directly`, `Specs never read a response: the api fixture asserts and validates it`, `guard-boundaries:` |
-| Expected states come from `src/expected-paths.ts`, written from the spec. `src/` and `tests/` never import `stub/`, `stub/` never imports `src/` | eslint `no-restricted-imports`; hook `guard-boundaries`; agent `harness-reviewer` | `the oracle stays independent` |
+| API specs call endpoint classes with a company fixture, `new GetJobOffer(company).get<ErrorResponse>(id, 404)`; the class checks status and schema. Never `request`, `.json()`, `.status()`, `.request()`, `.getResponseBody()` | eslint `no-restricted-syntax`; hook `guard-boundaries` | `Specs never touch request; endpoint classes send it`, `Specs call endpoint methods, never the request primitives`, `guard-boundaries:` |
+| Expected states come from `src/oracle.ts`, written from the spec. `src/` and `tests/` never import `stub/`, `stub/` never imports `src/` | eslint `no-restricted-imports`; hook `guard-boundaries`; agent `harness-reviewer` | `the oracle stays independent` |
 | Every `test()` title starts with its scenario ID `XXX-000`, a row of `docs/test-scenarios.md`, both directions | eslint `no-restricted-syntax`; `npm run traceability` | `A test title starts with its scenario ID, for example "WFL-001 ..."`, `api-tests: XXX-000 is documented but has no test`, `e2e-tests: test XXX-000 is not in docs/test-scenarios.md` |
 | A sandbox per test: a fresh `companyId` UUID (API), run-id data and own-title assertions (E2E) | agent `harness-reviewer` | the shared id or the global list |
 | Created data is known to teardown: the `offers` factory (API), `track(title)` after a UI create (E2E) | agent `harness-reviewer` | the untracked create |
@@ -54,7 +54,7 @@ Run Claude Code from this folder: hooks and settings load from the primary worki
 
 ## Never
 
-- Edit `expected-paths.ts`, the stub or a docs row to make a test pass. Fix the test, or fix the rule and say which in the commit.
+- Edit `oracle.ts`, the stub or a docs row to make a test pass. Fix the test, or fix the rule and say which in the commit.
 - Silence a lint rule or raise a budget. Split the file.
 - Put data in a shared tenant, or read global lists of the live demo.
 - Add a file that does not demonstrate a practice listed in `README.md`.

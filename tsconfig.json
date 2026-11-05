@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@api/*": ["api-tests/src/*"],
+      "@job-offer/*": ["api-tests/src/*"],
       "@e2e/*": ["e2e-tests/src/*"]
     }
   },

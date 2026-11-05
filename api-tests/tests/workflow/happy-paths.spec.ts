@@ -1,28 +1,29 @@
-import type { Action, Status } from "@api/expected-paths";
-import { FORWARD, HAPPY_PATHS, VALID_ACTIONS, flags } from "@api/expected-paths";
-import { expect, test, type Fixtures } from "@api/fixtures";
+import { GetAvailableTransitions, type JobOfferStatus, TransitionJobOffer } from "@job-offer/api";
+import { expect, type Fixtures, test } from "@job-offer/fixtures/fixtures";
+import { HAPPY_PATHS, VALID_ACTIONS, flagsOf, forward } from "@job-offer/oracle";
 
 type Row = (typeof HAPPY_PATHS)[number];
-const [DEFAULT, ...OPTIONAL] = HAPPY_PATHS;
-const label = (row: Row) =>
-  `${row.path.join(" -> ")} when the flags are ${row.flags.map(Number).join("")}`;
+const SMOKE = HAPPY_PATHS.filter((row) => row.on.length === 0);
+const OPTIONAL = HAPPY_PATHS.filter((row) => row.on.length > 0);
+const label = (row: Row) => `${row.path.join(" -> ")} with ${row.on.join(" and ") || "no flag"}`;
 
 /** Walks the oracle's chain with the forward action of each status, then closes. */
 const publishes =
   (row: Row) =>
-  async ({ api, configure, offers }: Fixtures) => {
-    await configure(flags(row.flags));
+  async ({ company, configure, offers }: Fixtures) => {
+    await configure(flagsOf(row));
     let offer = await offers.create();
-    for (const expected of [...row.path, "CLOSED" as Status]) {
-      offer = await api.transitionJobOffer(offer.id, FORWARD[offer.status] as Action);
+    const chain: JobOfferStatus[] = [...row.path, "CLOSED"];
+    for (const expected of chain) {
+      offer = await new TransitionJobOffer(company).transition(offer.id, forward(offer.status));
       expect(offer.status).toBe(expected);
       expect(offer.availableTransitions).toEqual(VALID_ACTIONS[expected]);
-      const { transitions } = await api.getAvailableTransitions(offer.id);
-      expect(transitions.map((t) => t.action)).toEqual(VALID_ACTIONS[expected]);
+      const { transitions } = await new GetAvailableTransitions(company).get(offer.id);
+      expect(transitions.map((transition) => transition.action)).toEqual(VALID_ACTIONS[expected]);
     }
     expect(offer.publishedAt).not.toBeNull();
     expect(offer.closedAt).not.toBeNull();
   };
 
-test(`WFL-001 ${label(DEFAULT)}`, { tag: "@smoke" }, publishes(DEFAULT));
+for (const row of SMOKE) test(`WFL-001 ${label(row)}`, { tag: "@smoke" }, publishes(row));
 for (const row of OPTIONAL) test(`WFL-001 ${label(row)}`, publishes(row));

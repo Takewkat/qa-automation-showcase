@@ -12,7 +12,7 @@ type Response = {
 type Spec = { paths: Record<string, Record<string, { responses: Record<string, Response> }>> };
 type Documented = { body: ValidateFunction | null; headers: Record<string, ValidateFunction> };
 
-const SPEC_FILE = join(__dirname, "..", "spec", "job-offer-swagger.yml");
+const SPEC_FILE = join(__dirname, "..", "..", "spec", "job-offer-swagger.yml");
 const ajv = addFormats(new Ajv2020({ strict: false, allErrors: true })).addFormat("decimal", true);
 const compiled = new Map<string, Documented>();
 let document: Promise<Spec> | undefined;

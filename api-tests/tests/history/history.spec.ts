@@ -1,22 +1,24 @@
-import { flags } from "@api/expected-paths";
-import { expect, test } from "@api/fixtures";
+import { GetJobOfferHistory, TransitionJobOffer } from "@job-offer/api";
+import { expect, test } from "@job-offer/fixtures/fixtures";
+import { ALL_FLAGS } from "@job-offer/oracle";
 
 const ACTIONS = ["submit", "finalize", "approve", "post", "close"] as const;
 
 test("HIS-001 history is empty at creation and follows every transition in order", async ({
-  api,
+  company,
   configure,
   offers,
 }) => {
-  await configure(flags([true, true, true]));
+  await configure(ALL_FLAGS);
   const offer = await offers.create();
-  expect(await api.getJobOfferHistory(offer.id)).toEqual([]);
-  for (const action of ACTIONS) await api.transitionJobOffer(offer.id, action);
-  const history = await api.getJobOfferHistory(offer.id);
-  expect(history.map((entry) => entry.action)).toEqual([...ACTIONS]);
-  expect(history.map((entry) => entry.fromStatus).slice(1)).toEqual(
-    history.map((entry) => entry.toStatus).slice(0, -1),
-  );
-  const times = history.map((entry) => Date.parse(entry.performedAt));
+  const history = new GetJobOfferHistory(company);
+  expect(await history.get(offer.id)).toEqual([]);
+  for (const action of ACTIONS) await new TransitionJobOffer(company).transition(offer.id, action);
+  const entries = await history.get(offer.id);
+  expect(entries.map((entry) => entry.action)).toEqual([...ACTIONS]);
+  const from = entries.map((entry) => entry.fromStatus).slice(1);
+  const to = entries.map((entry) => entry.toStatus).slice(0, -1);
+  expect(from).toEqual(to);
+  const times = entries.map((entry) => Date.parse(entry.performedAt));
   expect(times).toEqual([...times].sort((a, b) => a - b));
 });
