@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 
-const PORT = 8080;
+const PORT = Number(process.env.STUB_PORT || 8080);
 
 /** The reference stub; routes land in app.ts, /health is what Playwright's webServer probes. */
 export const app = new Hono();

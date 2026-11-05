@@ -27,7 +27,14 @@ function priorities(part: string): Map<string, string> {
   return map;
 }
 
-/** Worst status per scenario ID across every spec that carries it. */
+/** The worst of the statuses given, in WORST order; an undefined entry is a scenario not seen yet. */
+function worst(statuses: (string | undefined)[]): string {
+  return statuses
+    .filter((status): status is string => status !== undefined)
+    .sort((a, b) => WORST.indexOf(a) - WORST.indexOf(b))[0];
+}
+
+/** Worst status per scenario ID across every spec that carries it and ran at least once. */
 function results(report: string): Map<string, string> {
   const file = join("reports", report, "results.json");
   const map = new Map<string, string>();
@@ -35,12 +42,8 @@ function results(report: string): Map<string, string> {
   const walk = (suite: Suite): void => {
     for (const spec of suite.specs ?? []) {
       const id = ID_PREFIX.exec(spec.title)?.[1];
-      if (!id) continue;
-      const status = spec.tests
-        .map((t) => t.status)
-        .sort((a, b) => WORST.indexOf(a) - WORST.indexOf(b))[0];
-      const known = map.get(id);
-      map.set(id, known && WORST.indexOf(known) < WORST.indexOf(status) ? known : status);
+      if (!id || spec.tests.length === 0) continue;
+      map.set(id, worst([map.get(id), ...spec.tests.map((t) => t.status)]));
     }
     (suite.suites ?? []).forEach(walk);
   };

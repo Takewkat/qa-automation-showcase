@@ -27,4 +27,6 @@ const RULES = [
 const { path, text } = readInput();
 const hit = RULES.find((candidate) => candidate.when.test(path) && candidate.deny.test(text));
 if (!hit) process.exit(0);
-block(`guard-boundaries: ${path} breaks a layer rule: ${hit.rule} (AGENTS.md, "Critical rules").`);
+block(
+  `guard-boundaries: ${path} breaks a layer rule: ${hit.rule} (AGENTS.md, "Rules, each with its check").`,
+);

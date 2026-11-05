@@ -1,17 +1,20 @@
 import { defineConfig, devices } from "@playwright/test";
 
-import { baseUrl } from "../config/environments";
+import { baseUrl, lookup } from "../config/environments";
 import { reportsFor } from "../config/reporting";
 
 const { url } = baseUrl("web", "demo");
 
-/** BROWSERS=chromium,firefox,webkit picks the projects; the default keeps one browser. */
 const DEVICES = {
   chromium: "Desktop Chrome",
   firefox: "Desktop Firefox",
   webkit: "Desktop Safari",
 } as const;
-const browsers = (process.env.BROWSERS ?? "chromium").split(",") as (keyof typeof DEVICES)[];
+
+/** BROWSERS=chromium,firefox,webkit picks the projects; the default keeps one browser. */
+const browsers = (process.env.BROWSERS || "chromium")
+  .split(",")
+  .map((entry) => lookup(DEVICES, entry.trim(), "BROWSERS"));
 
 /** Two workers at most against the shared demo. */
 const WORKERS = 2;

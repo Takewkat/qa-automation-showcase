@@ -4,7 +4,7 @@ import { join } from "node:path";
 /** Each part ties docs/test-scenarios.md to tests/ by scenario ID; drift in either direction fails. */
 const PARTS = ["api-tests", "e2e-tests"];
 const DOC_ROW = /^\|\s*([A-Z]{3,4}-\d{3})\b/;
-const TEST_TITLE = /\btest\(\s*[`"']([A-Z]{3,4}-\d{3})/g;
+const TEST_TITLE = /\btest(?:\.(?:skip|fixme|only|fail))?\(\s*[`"']([A-Z]{3,4}-\d{3})/g;
 
 /** IDs of documented scenarios marked as implemented (a trailing "no" cell means designed only). */
 function documentedIds(part: string): Set<string> {

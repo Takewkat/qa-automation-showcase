@@ -8,5 +8,5 @@
     }
   },
   "include": ["config/**/*.ts", "scripts/**/*.ts", "api-tests/**/*.ts", "e2e-tests/**/*.ts"],
-  "exclude": ["**/node_modules", "**/test-results", "**/playwright-report"]
+  "exclude": ["**/node_modules", "reports"]
 }

@@ -1,6 +1,4 @@
 node_modules/
-test-results/
-playwright-report/
 reports/
 .env
 .DS_Store
