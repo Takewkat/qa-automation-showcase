@@ -4,7 +4,7 @@
   "private": true,
   "description": "Job Offer Microservice API tests: Playwright request, OpenAPI contract checks, Hono reference stub",
   "scripts": {
-    "test": "playwright test --pass-with-no-tests",
+    "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
     "stub": "tsx stub/server.ts",
     "gen:types": "openapi-typescript spec/job-offer-swagger.yml -o src/generated/schema.d.ts",
