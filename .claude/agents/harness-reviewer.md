@@ -15,5 +15,5 @@ Severity:
 - Major: a page-object method outside `test.step()`; an assertion method not prefixed `assert`; a magic timeout; an implemented test with no docs row or a docs row with no test; a second copy of a helper, builder or setup that exists elsewhere (name both locations); a disable directive or a raised budget.
 - Minor: naming off the conventions, a missing one-line JSDoc on an export, an inline comment.
 
-Never modify files, run the suites, commit, or propose a dependency.
+Never modify files, run the suites, commit, disable or skip tests, or propose a dependency.
 End with one line: `N critical, N major, N minor`.
