@@ -5,7 +5,7 @@ Two independent test suites for a QA automation take-home (`HOMEWORK.md`), writt
 - `api-tests/` Part 1: a risk-based API suite for a job-offer microservice that exists only as an OpenAPI document. Playwright `request` + TypeScript. Every response is validated against the spec. A small reference stub keeps the suite green on a clean clone.
 - `e2e-tests/` Part 2: three user flows on the Conduit RealWorld demo. Playwright, page objects, API-seeded data.
 
-Status: the harness is in place; Part 1 and Part 2 land next.
+Status: the harness and Part 1 are in; Part 2 lands next.
 
 ## Run
 
@@ -26,12 +26,12 @@ Node 22.22 or newer (24 recommended). Playwright browsers once: `npx playwright 
 
 | # | Practice | Where |
 |---|---|---|
-| 1 | Risk-based scoping: 22 scenarios, every P1 risk, exclusions explained | `api-tests/docs/test-scenarios.md` |
+| 1 | Risk-based scoping: 21 scenarios, every P1 risk, exclusions explained | `api-tests/docs/test-scenarios.md` |
 | 2 | OpenAPI as the contract: every response validated, types generated | `api-tests/src/contract.ts` |
 | 3 | An oracle independent of the system under test, lint-enforced | `api-tests/src/expected-paths.ts`, `docs/decisions/0003` |
 | 4 | A tenant per test: parallel-safe, exact assertions | `api-tests/src/fixtures.ts`, `docs/decisions/0002` |
 | 5 | Table-driven matrices: configurations and invalid transitions | `api-tests/tests/workflow/` |
-| 6 | State-aware teardown: withdraw then delete, else close and say so | `api-tests/src/fixtures.ts` |
+| 6 | State-aware teardown: withdraw then delete, close what is live, report what is kept | `api-tests/src/workflow.ts` |
 | 7 | Named environments: `TEST_ENV` picks the row, production refused | `config/environments.ts`, `docs/decisions/0006` |
 | 8 | Selectors -> pages -> fixtures -> specs, import direction enforced | `e2e-tests/src/`, `eslint.config.mjs` |
 | 9 | Shared-demo discipline: API seeding, injected session, own-data assertions | `e2e-tests/src/fixtures/`, `docs/decisions/0004` |

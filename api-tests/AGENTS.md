@@ -10,10 +10,10 @@ Rules: the table "Rules, each with its check" in the root `AGENTS.md`. Below: th
 |---|---|
 | `spec/job-offer-swagger.yml`, `src/generated/schema.d.ts` | the contract, verbatim, and its types (`npm run gen:types`, committed) |
 | `src/client.ts` | `OPERATIONS` table from the spec and the `JobOfferApi` facade: one method per operation, asserts its success status or `{ expect: <status> }`, validates the body, returns it typed |
-| `src/contract.ts` | `validate(operation, status, body)`: the response schema by path, method and status from the spec, ajv. Called by the facade, never by a spec |
-| `src/fixtures.ts` | `test` with `companyId`, `api`, `otherApi`, `anonApi`, `offers` (factory; teardown withdraws and deletes, warns on a leftover), `configure` |
+| `src/contract.ts` | `validate(method, path, status, body, headers)`: the response schema and headers the spec documents at that status, ajv. Called by the facade, never by a spec |
+| `src/fixtures.ts` | `test` with `api`, `companyId`, `otherApi`, `anonApi`, `badHeaderApi`, `offers` and `otherOffers` (factories, torn down after the test), `configure` |
 | `src/payloads.ts` | request builders |
-| `src/workflow.ts` | `advance()` drives an offer to a status. Specs never call it, they use `offers.createIn(status, flags)` |
+| `src/workflow.ts` | `Offers` factory: `create(body)`, `createIn(status, flags)`, teardown that withdraws and deletes, closes a live offer, reports what it kept as a test attachment. `advance()` and `configure()` behind it |
 | `src/expected-paths.ts` | the oracle, written from the spec |
 | `stub/` | `server.ts`, `app.ts`, `state-machine.ts`, `store.ts`, `validation.ts`. A means to run the suite, not a deliverable |
 | `tests/<group>/*.spec.ts`, `tests/_template/` | one folder per business area, the file to copy. Model: `tests/workflow/` (matrices, gate test, oracle) |
