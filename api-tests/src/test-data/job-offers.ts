@@ -49,7 +49,7 @@ export const incompleteOffer = (
   ...overrides,
 });
 
-/** A body the request type forbids, typed as that request: null where a string is required, a string where a boolean is. */
+/** A body the request type forbids, typed as that request: null for a string, a string for a boolean. */
 export const malformed = <T extends object>(body: Malformed<T>): T => body as unknown as T;
 
 /** A complete offer with fields the contract refuses. */

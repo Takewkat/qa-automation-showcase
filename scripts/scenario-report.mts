@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-/** Joins each part's results.json with its scenario table: one line per scenario ID, totals per priority, a P1 gate. */
+/** Joins results.json with the scenario table: one line per ID, totals per priority, a P1 gate. */
 const PARTS = [
   { part: "api-tests", report: "api" },
   { part: "e2e-tests", report: "e2e" },

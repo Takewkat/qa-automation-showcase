@@ -2,7 +2,7 @@ import { join } from "node:path";
 
 import type { PlaywrightTestConfig } from "@playwright/test";
 
-/** Everything a run leaves behind sits under reports/<part>/: one place for humans, CI and the scenario report. */
+/** One place for what a run leaves, reports/<part>/: humans, CI and the scenario report read it. */
 export const REPORTS_ROOT = join(__dirname, "..", "reports");
 
 export type Part = "api" | "e2e";

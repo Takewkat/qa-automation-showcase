@@ -58,7 +58,7 @@ export const REACHED_WITH: Partial<Record<JobOfferStatus, Partial<WorkflowFlags>
   TO_POST: { manualPostingRequired: true },
 };
 
-/** One row per flag combination: the flags on, by name, and the statuses a complete offer passes up to PUBLISHED. */
+/** One row per flag combination: the flags on, and the statuses a complete offer passes to PUBLISHED. */
 export const HAPPY_PATHS: { on: (keyof WorkflowFlags)[]; path: JobOfferStatus[] }[] = [
   { on: [], path: ["PUBLISHED"] },
   { on: ["manualPostingRequired"], path: ["TO_POST", "PUBLISHED"] },

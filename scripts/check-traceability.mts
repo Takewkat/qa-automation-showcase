@@ -1,11 +1,11 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 
-/** Each part ties docs/test-scenarios.md to tests/ by scenario ID, and every test() call to its folder tag plus one layer tag; drift in any direction fails. */
+/** Ties docs/test-scenarios.md to tests/ by scenario ID and every test() to its folder and layer tags. */
 const PARTS = ["api-tests", "e2e-tests"];
 const LAYERS = ["@happy-path", "@validation-error", "@error-case"];
 const DOC_ROW = /^\|\s*([A-Z]{3,4}-\d{3})\b/;
-/** A test() call: the title, an optional options object, then the function; tags come from the options' tag property only. */
+/** A test() call: title, optional options object, then the function; tags come from the tag property. */
 const TEST_CALL =
   /\btest(?:\.(?:skip|fixme|only|fail))?\(\s*([`"'])(([A-Z]{3,4}-\d{3})(?:(?!\1).)*)\1\s*,\s*(?:(\{.*?\})\s*,\s*)?(?=async\b|function\b|\(|[\w$]+\s*\()/gs;
 const TAG_OPTION = /\btag:\s*(\[[^\]]*\]|["'`][^"'`]*["'`])/;
@@ -32,7 +32,7 @@ function documentedIds(part: string): Set<string> {
 /** The tags a test() options object declares. */
 const tagsOf = (options: string): string[] => TAG_OPTION.exec(options)?.[1].match(TAG) ?? [];
 
-/** Every test() call under the part's tests/ whose title starts with a scenario ID: file, group folder, title, tags. */
+/** Every test() under the part's tests/ with a scenario ID in its title: file, folder, title, tags. */
 function specs(part: string): Spec[] {
   const dir = join(part, "tests");
   if (!existsSync(dir)) return [];

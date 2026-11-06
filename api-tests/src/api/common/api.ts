@@ -33,7 +33,7 @@ const searchParams = (query: Query) => {
   return params;
 };
 
-/** One endpoint of a spec: path template, method, success status; a subclass adds the typed call. An instance holds its last response, so use one per concurrent call. */
+/** One endpoint: path, method, success status, the typed call in the subclass. Holds its last response. */
 export abstract class Api {
   abstract readonly path: string;
   abstract readonly method: HTTPMethod;
@@ -54,7 +54,7 @@ export abstract class Api {
     });
   }
 
-  /** Sends the request as a named step, nothing checked; the url goes relative to baseURL, so without its leading slash. */
+  /** Sends the request as a named step, unchecked; the url is relative to baseURL, so no leading slash. */
   async request({ pathParams, query = {}, data }: RequestOptions = {}): Promise<void> {
     const url = this.getUrl(pathParams);
     const options = {

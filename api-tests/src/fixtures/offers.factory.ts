@@ -24,7 +24,7 @@ export class OffersFactory {
     return offer;
   }
 
-  /** Creates an offer (a complete one by default), sets the flags the status needs or the given ones, and moves it there. */
+  /** Creates an offer, sets the flags the status needs (or the given ones) and moves it there. */
   async createIn(
     status: JobOfferStatus,
     body: CreateJobOfferRequest = completeOffer(),
