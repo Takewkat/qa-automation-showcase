@@ -5,8 +5,6 @@ import { reportsFor } from "../config/reporting";
 
 const { environment, url } = baseUrl("web", "demo");
 
-/** No retry on the shared demo: a 429 would only get another 429 and spend the window. */
-
 const DEVICES = {
   chromium: "Desktop Chrome",
   firefox: "Desktop Firefox",
