@@ -3,9 +3,9 @@
 Two test suites for a QA automation take-home (`HOMEWORK.md`), written so that a team or an agent extends them without asking.
 
 - `api-tests/` Part 1: API suite for a job-offer microservice that exists only as an OpenAPI document. Playwright `request` + TypeScript, every response validated against the spec, a reference stub keeps the suite green on a clean clone.
-- `e2e-tests/` Part 2: three user flows on the Conduit RealWorld demo. Playwright, page objects, API-seeded data.
+- `e2e-tests/` Part 2: six user flows in three domains on the Conduit RealWorld demo. Playwright, page objects behind fixtures, API-seeded data, one cached user per run.
 
-Status: the harness and Part 1 are in; Part 2 lands next.
+Status: the harness, Part 1 and Part 2 are in.
 
 ## Run
 
@@ -19,7 +19,7 @@ npx playwright test -c api-tests --grep @error-case   # one layer, a feature (@w
 npm run report:scenarios            # reports/scenarios.md: result per scenario ID, P1 gate
 ```
 
-Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `npx playwright install chromium` once; `.env.example` pins `TEST_ENV`, overrides one URL or adds browsers. Runtime dependencies: Playwright, ajv with ajv-formats and yaml at the root (`shared/` uses them), faker in `api-tests/`, zod in the stub.
+Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `npx playwright install chromium` once; `.env.example` pins `TEST_ENV`, overrides one URL or adds browsers. Runtime dependencies: Playwright, ajv with ajv-formats and yaml at the root (`shared/` uses them), faker in both parts, zod in the stub.
 
 ## Practices shown
 

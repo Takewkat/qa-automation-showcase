@@ -1,17 +1,21 @@
 import type { APIRequestContext, Browser, Fixtures, Page } from "@playwright/test";
 
 import type { Session, User } from "@e2e/api";
+import { AuthPage } from "@e2e/pages/auth.page";
+import { NavbarPage } from "@e2e/pages/navbar.page";
 import { AUTH_FILE, readCachedUser } from "@e2e/setup/auth-file";
 
 /** The run's user as the setup project cached it. */
 export type ApiUser = Pick<User, "username" | "email" | "token">;
 
-/** What a spec can ask for: the run's user, the sessions to call the API as, a page logged in as that user. */
+/** What a spec can ask for: the run's user, the sessions to call the API as, a page logged in as that user, and the two page objects of a clean browser. */
 export type AuthFixtures = {
   apiUser: ApiUser;
   session: Session;
   anonymous: Session;
   authenticatedPage: Page;
+  authPage: AuthPage;
+  navbar: NavbarPage;
 };
 
 /** The user cached for the target, or a failure naming the project that writes it. */
@@ -22,11 +26,11 @@ const cachedUser = (baseURL: string | undefined): ApiUser => {
   return { username: user.username, email: user.email, token: user.token };
 };
 
-/** One user per run, registered by the setup project and shared by every test: the demo allows 5 register or login calls per hour per IP. */
+/** One user per run, registered by the setup project and shared by every test: the demo allows 5 register or login calls per hour per IP. authPage and navbar sit on the plain page, logged out. */
 export const authFixtures: Fixtures<
   AuthFixtures,
   object,
-  { request: APIRequestContext; baseURL?: string },
+  { request: APIRequestContext; baseURL?: string; page: Page },
   { browser: Browser }
 > = {
   apiUser: ({ baseURL }, use) => use(cachedUser(baseURL)),
@@ -37,4 +41,6 @@ export const authFixtures: Fixtures<
     await use(await context.newPage());
     await context.close();
   },
+  authPage: ({ page }, use) => use(new AuthPage(page)),
+  navbar: ({ page }, use) => use(new NavbarPage(page)),
 };
