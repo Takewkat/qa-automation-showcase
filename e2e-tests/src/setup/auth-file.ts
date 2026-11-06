@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
 
 import type { User } from "@e2e/api";
 import { resolveEnvironment } from "../../../config/environments";
@@ -7,6 +7,8 @@ import { REPORTS_ROOT } from "../../../config/reporting";
 
 /** The storageState of the run's user, one file per environment under the gitignored reports/: a local user is never sent to the demo. */
 export const AUTH_FILE = join(REPORTS_ROOT, "e2e", ".auth", `${resolveEnvironment("demo")}.json`);
+/** The same file as the logs name it, relative to the repo. */
+export const AUTH_FILE_LABEL = relative(join(REPORTS_ROOT, ".."), AUTH_FILE);
 const KEY = "loggedUser";
 
 type Stored = { headers: { Authorization: string }; isAuth: true; loggedUser: User };
@@ -14,7 +16,10 @@ type StoredOrigin = { origin: string; localStorage: { name: string; value: strin
 type StorageState = { cookies: never[]; origins: StoredOrigin[] };
 
 /** The origin the user is cached for; the config sets baseURL on every project. */
-const originOf = (baseURL: string | undefined): string => new URL(String(baseURL)).origin;
+export const originOf = (baseURL: string | undefined): string => new URL(String(baseURL)).origin;
+
+/** When the file was written, for the logs. */
+export const cachedSince = (): string => statSync(AUTH_FILE).mtime.toISOString();
 
 /** What the app reads from localStorage at start: the header it will send, the auth flag, the user as the API returned it. */
 const stored = (user: User): Stored => ({

@@ -3,7 +3,7 @@ import type { APIRequestContext, Browser, BrowserContext, Fixtures, Page } from 
 import type { Session, User } from "@e2e/api";
 import { AuthPage } from "@e2e/pages/auth.page";
 import { NavbarPage } from "@e2e/pages/navbar.page";
-import { AUTH_FILE, readCachedUser } from "@e2e/setup/auth-file";
+import { AUTH_FILE, AUTH_FILE_LABEL, originOf, readCachedUser } from "@e2e/setup/auth-file";
 import { budget } from "@e2e/utils/requests";
 import { log } from "@shared/log";
 
@@ -37,17 +37,23 @@ export const authFixtures: Fixtures<
 > = {
   apiUser: ({ baseURL }, use) => use(cachedUser(baseURL)),
   session: ({ request, apiUser }, use) => {
-    log("fixture", `session as ${apiUser.username}`);
+    log("fixture", `session: API calls as ${apiUser.username} with the cached token`);
     return use({ request, token: apiUser.token });
   },
-  anonymous: ({ request }, use) => use({ request }),
+  anonymous: ({ request }, use) => {
+    log("fixture", "anonymous: API calls without a token");
+    return use({ request });
+  },
   context: async ({ context, baseURL }, use, info) => {
     const report = await budget(context, info, baseURL);
     await use(context);
     await report();
   },
   authenticatedPage: async ({ browser, baseURL, apiUser }, use, info) => {
-    log("fixture", `authenticatedPage as ${apiUser.username}, context from ${AUTH_FILE}`);
+    log(
+      "fixture",
+      `authenticatedPage: new context on ${originOf(baseURL)} as ${apiUser.username}, localStorage.loggedUser from ${AUTH_FILE_LABEL}, no cookies`,
+    );
     const context = await browser.newContext({ storageState: AUTH_FILE });
     const report = await budget(context, info, baseURL);
     await use(await context.newPage());

@@ -19,7 +19,7 @@ spec -> fixtures -> page object -> selectors. API clients are reached through fi
 | `articles`, `track(title)` | `ArticlesFactory` of the cached user: `seed(draft?)` and `comment(slug, text?)` through the API, `track(title)` for an article the UI creates; teardown deletes every seeded slug and every tracked title found among the user's own, reported through `reportLeftovers` |
 | `src/test-data/factories.ts` | `RUN_ID` (`qa-<base36 time>-<worker>`); `uniqueUser()`, `articleDraft()` (slug-safe title with the run id, no tag), `commentText()`; faker, never `node:crypto` |
 | `src/utils/requests.ts` | the budget of a context: shell served once per worker, noise answered locally, `server requests` attached per test, a 429 annotated |
-| `@shared/log` | `log(scope, message)`: the key moments on the console (setup, fixture, api, seed, track, cleanup, budget), shown by UI mode's Console and the HTML report |
+| `@shared/log` | `log(scope, message)`: the key moments on the console, stamped: setup (who, where, which file, cached since when), fixture (the session and how it entered the browser), ui (sign-up, login, logout), api (every call and its status), seed, track, cleanup, budget; UI mode's Console and the HTML report show them |
 | `tests/<domain>/<domain>-<flow>.spec.ts` | one flow, readable as a user story; tags: the domain, one layer, one priority (`@p1`, `@p2`, `@p3`, the docs row), one tier (`@smoke` proves the product works, `@sanity` a daily action, `@regression` a fixed bug, `@release-check` an entry point). Model: `articles`, ART-001 |
 
 ## Add a flow (bottom up; in brackets, the error when a step is skipped)
