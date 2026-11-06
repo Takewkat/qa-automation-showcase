@@ -4,10 +4,13 @@ import { GetCurrentUser, RegisterUser, type Session } from "@e2e/api";
 import { readCachedUser, writeCachedUser } from "@e2e/setup/auth-file";
 import { uniqueUser } from "@e2e/test-data/factories";
 
-/** Whether the token still answers GET /api/user. */
+const TOO_MANY_REQUESTS = 429;
+
+/** Whether the token still answers GET /api/user; a 429 stops the run here, naming it, instead of spending a register call on it. */
 const loggedIn = async (session: Session): Promise<boolean> => {
   const get = new GetCurrentUser(session);
   await get.request();
+  if (get.getStatusCode() === TOO_MANY_REQUESTS) get.checkStatusCode();
   return get.getStatusCode() === get.correctStatusCode;
 };
 
