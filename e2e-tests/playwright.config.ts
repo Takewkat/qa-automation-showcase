@@ -21,6 +21,9 @@ const WORKERS = 2;
 const TEST_TIMEOUT_MS = 60_000;
 const EXPECT_TIMEOUT_MS = 10_000;
 
+/** The project every browser project depends on: src/setup/auth.setup.ts caches the run's user, outside tests/ so the scenario rules do not apply to it. */
+const SETUP = "setup";
+
 export default defineConfig({
   testDir: "tests",
   fullyParallel: true,
@@ -36,5 +39,12 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
-  projects: browsers.map((name) => ({ name, use: { ...devices[DEVICES[name]] } })),
+  projects: [
+    { name: SETUP, testDir: "src/setup", testMatch: /auth\.setup\.ts/ },
+    ...browsers.map((name) => ({
+      name,
+      use: { ...devices[DEVICES[name]] },
+      dependencies: [SETUP],
+    })),
+  ],
 });

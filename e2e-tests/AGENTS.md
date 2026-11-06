@@ -12,10 +12,12 @@ spec -> fixtures -> page object -> selectors. API clients are reached through fi
 |---|---|
 | `src/selectors/<page>.selectors.ts` | `<PAGE>_SELECTORS as const`: one group per component, functions for dynamic selectors, no logic |
 | `src/pages/<page>.page.ts` | one class extending `BasePage`, every method in `test.step()`, assertions prefixed `assert`; `getByRole` is fine here, raw CSS only from the selectors file |
-| `src/api/` | one class per endpoint over `@shared/api/api`, the api-tests shape, for login, seeding and cleanup; the service class sets the Token header and no contract, so a precondition call checks its status only |
+| `src/api/` | `conduit-api.ts`: a `Session` (`request`, optional `token`) over `@shared/api/api`, paths under `/api/` on the web base URL, `Authorization: Token` when the session has one, no contract (a precondition call checks its status only); one class per endpoint in `users/`, `articles/`, `comments/`; `types.ts` flat, `index.ts` the barrel |
 | `src/fixtures/<domain>.fixtures.ts`, `test.ts` | page objects and data of one domain; `test.ts` chains the domains and exports `test` |
-| `authenticatedPage`, `track(title)` | a user registered through the API, session injected into `localStorage`; a UI-created article, found in teardown by its title among the user's own, then deleted |
-| `src/test-data/factories.ts` | users, articles and comments carrying the run id |
+| `src/setup/auth.setup.ts`, `auth-file.ts` | the `setup` project every browser project depends on: reuses `reports/e2e/.auth/<TEST_ENV>.json` when its token answers `GET /api/user`, else registers one user and writes that storageState. One user per run, not per test: the demo allows 5 register or login calls per hour per IP, a token never expires, users stay (no delete endpoint) |
+| `apiUser`, `session`, `anonymous`, `authenticatedPage` | the cached user (`username`, `email`, `token`); the API sessions with and without its token; a new context from the cached storageState (`localStorage.loggedUser`), closed after the test |
+| `articles`, `track(title)` | `ArticlesFactory` of the cached user: `seed(draft?)` and `comment(slug, text?)` through the API, `track(title)` for an article the UI creates; teardown deletes every seeded slug and every tracked title found among the user's own, reported through `reportLeftovers` |
+| `src/test-data/factories.ts` | `RUN_ID` (`qa-<base36 time>-<worker>`); `uniqueUser()`, `articleDraft()` (slug-safe title with the run id, no tag), `commentText()`; faker, never `node:crypto` |
 | `tests/<domain>/<domain>-<flow>.spec.ts` | one flow, readable as a user story; tags: the domain, one layer, one tier (`@smoke` proves the product works, `@sanity` a daily action, `@regression` a fixed bug, `@release-check` an entry point). Model: `articles`, ART-001 |
 
 ## Add a flow (bottom up; in brackets, the error when a step is skipped)
@@ -35,4 +37,5 @@ spec -> fixtures -> page object -> selectors. API clients are reached through fi
 | `"ART-001 ..." carries @articles @happy-path; expected @articles, one of ... and one of @smoke, ...` | no tier tag, two, or no layer | one layer and one tier per test, the tier from the docs row |
 | `strict mode violation` | the locator matched several records of the shared demo | scope by own title with the dynamic selector |
 | `net::ERR_NAME_NOT_RESOLVED` or 5xx from fly.dev | demo down | `TEST_ENV=local` or `WEB_BASE_URL=...` |
+| a blank page after Sign up or Login, nothing under the navbar | the demo answered 429: 5 register or login calls per hour per IP, about 100 requests per 15 minutes | wait for the window; iterate on `TEST_ENV=local`; never loop a run or `--repeat-each` on the demo |
 | an element appears late | shared demo latency | assertions retry; raise `expect.timeout` in the config only, never a sleep |
