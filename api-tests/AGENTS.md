@@ -17,7 +17,7 @@ Rules: the table in the root `AGENTS.md`. Below: the paths, the checklist, the e
 | `src/test-data/factories.ts`, `job-offers.ts` | faker generators; builders with overrides (`completeOffer`, `incompleteOffer`, `compensation`, `salary`); `malformed()` for a body the types forbid |
 | `src/utils/workflow.ts`, `src/cleanup/` | `advance()` moves an offer to a status, `configure()` sets flags; `cleanupJobOffers()` withdraws, deletes, closes what is live |
 | `src/fixtures/` | `company`, `otherCompany`, `anonymous`, `malformedHeader`, `offers`, `otherOffers`, `configure`; `offers.factory.ts`; `fixtures.ts` exports `test` |
-| `stub/` | a means to run the suite, not a deliverable: `router.ts`, `app.ts`, `state-machine.ts`, `store.ts`, `validation.ts`, `errors.ts` |
+| `stub/` | a means to run the suite, not a deliverable. `http/` the adapter (`router.ts`, `request.ts` parsing and guards, `errors.ts` the spec's error bodies, `app.ts` the routes), `domain/` the rules (`state-machine.ts`, `schemas.ts` the request shapes), `store/memory.ts`; `server.ts` starts it. `domain/` imports nothing of the other two, `store/` nothing of `http/` |
 | `tests/<group>/*.spec.ts`, `tests/_template/` | one folder per business area, its name is the feature tag; the file to copy. Model: `tests/workflow/` |
 | `docs/test-scenarios.md` | the grid (operation by layer), the scenario tables, rationale, assumptions |
 

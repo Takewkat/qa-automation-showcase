@@ -41,19 +41,7 @@ const REASON = z.string().max(500);
 const REQUIRED_REASON = z
   .string({ error: (issue) => (issue.input === undefined ? "is required for reject" : undefined) })
   .max(500);
-
-/** The spec's format: uuid, as lenient as the contract validator: any 8-4-4-4-12 hex. */
-export const isUuid = (value: string): boolean => z.guid().safeParse(value).success;
-
-/** The JSON object the text holds, or undefined for malformed JSON and non-objects. */
-export const jsonObject = (text: string): object | undefined => {
-  try {
-    const value: unknown = JSON.parse(text);
-    return value && typeof value === "object" && !Array.isArray(value) ? value : undefined;
-  } catch {
-    return undefined;
-  }
-};
+const INTEGER = z.string().min(1).transform(Number);
 
 /** The transition action a path can name. */
 export const ACTION = z.enum(ACTIONS);
@@ -75,9 +63,6 @@ export const UPDATE_CONFIGURATION = z.object({
   manualPostingRequired: z.boolean().optional(),
 });
 
-/** A query integer: a non-empty string of digits; anything else fails downstream. */
-const INTEGER = z.string().min(1).transform(Number);
-
 /** The listJobOffers query with the spec's defaults; status is the repeated parameter form. */
 export const LIST_QUERY = z.object({
   page: INTEGER.pipe(z.number().int().min(0)).default(0),
@@ -89,13 +74,6 @@ export const LIST_QUERY = z.object({
   createdBefore: z.iso.datetime({ offset: true }).optional(),
   sort: z.enum(SORTS).default("-createdAt"),
 });
-
-/** The list query as the schema reads it: `status` repeats, the other keys do not. */
-export const listQuery = (query: URLSearchParams) => {
-  const status = query.getAll("status");
-  const scalars = Object.fromEntries(Array.from(query.keys(), (key) => [key, query.get(key)]));
-  return LIST_QUERY.safeParse({ ...scalars, status: status.length ? status : undefined });
-};
 
 /** TransitionRequest; the reason is required for reject only. */
 export const transitionRequest = (action: Action) =>
@@ -110,36 +88,3 @@ export type Location = z.infer<typeof LOCATION>;
 export type Compensation = z.infer<typeof COMPENSATION>;
 /** A validated list query, defaults applied. */
 export type ListQuery = z.infer<typeof LIST_QUERY>;
-/** One entry of the spec's ValidationError.fieldErrors. */
-export type FieldError = { field: string; message: string; rejectedValue?: unknown };
-/** The spec's ValidationError body. */
-export type ValidationErrorBody = {
-  code: "VALIDATION_ERROR";
-  message: string;
-  fieldErrors: FieldError[];
-};
-
-/** The spec's path form of a zod issue path: compensation.salaryEntries[0].amount. */
-const fieldPath = (path: PropertyKey[]): string =>
-  path.reduce<string>((acc, key) => {
-    if (typeof key === "number") return `${acc}[${key}]`;
-    return acc ? `${acc}.${String(key)}` : String(key);
-  }, "");
-
-/** The spec's ValidationError body: one field error per zod issue, with the rejected value when there is one. */
-export function validationError(error: z.ZodError): ValidationErrorBody {
-  const fieldErrors = error.issues.map((issue) => ({
-    field: fieldPath(issue.path),
-    message: issue.message,
-    rejectedValue: issue.input,
-  }));
-  return { code: "VALIDATION_ERROR", message: "Request validation failed", fieldErrors };
-}
-
-/** The dotted paths of the fields the request did not send at all. */
-export const missingOf = (error: z.ZodError): string[] =>
-  error.issues.filter((issue) => issue.input === undefined).map((issue) => fieldPath(issue.path));
-
-/** One line naming each invalid value, for a BAD_REQUEST message. */
-export const describe = (error: z.ZodError): string =>
-  error.issues.map((issue) => `${fieldPath(issue.path)}: ${issue.message}`).join("; ");

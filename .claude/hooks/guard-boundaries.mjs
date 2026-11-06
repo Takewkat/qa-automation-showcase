@@ -22,6 +22,16 @@ const RULES = [
     deny: /from ["'](@job-offer\/|[^"']*\/src\/)/,
     rule: "stub/ never imports the suite",
   },
+  {
+    when: /api-tests\/stub\/domain\/.*\.ts$/,
+    deny: /from ["']\.\.\/(http|store)\//,
+    rule: "stub/domain/ imports neither http/ nor store/: they depend on it",
+  },
+  {
+    when: /api-tests\/stub\/store\/.*\.ts$/,
+    deny: /from ["']\.\.\/http\//,
+    rule: "stub/store/ never imports http/",
+  },
 ];
 
 const { path, text } = readInput();

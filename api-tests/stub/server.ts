@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 
-import { app } from "./app.ts";
+import { app } from "./http/app.ts";
 
 const PORT = Number(process.env.STUB_PORT || 8080);
 

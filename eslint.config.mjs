@@ -38,6 +38,7 @@ const noImports = (files, ...patterns) => ({
 });
 
 const ORACLE = "the oracle stays independent";
+const FACTORIES = "Random data comes from src/test-data/factories.ts";
 
 export default tseslint.config(
   { ignores: ["**/node_modules/", "**/reports/", "**/*.example", "**/generated/"] },
@@ -108,19 +109,22 @@ export default tseslint.config(
   noImports(
     ["api-tests/tests/**/*.ts", "api-tests/src/**/*.ts"],
     { group: ["**/stub/**"], message: `Tests and src never import stub/: ${ORACLE}` },
-    {
-      group: ["node:crypto", "crypto"],
-      message: "Random data comes from src/test-data/factories.ts",
-    },
+    { group: ["node:crypto", "crypto"], message: FACTORIES },
   ),
   noImports(["api-tests/stub/**/*.ts"], {
     group: ["@job-offer/*", "**/src/**"],
     message: `stub/ never imports the suite: ${ORACLE}`,
   }),
+  noImports(["api-tests/stub/domain/**/*.ts"], {
+    group: ["**/http/**", "**/store/**"],
+    message: "stub/domain/ imports neither http/ nor store/: they depend on it",
+  }),
+  noImports(["api-tests/stub/store/**/*.ts"], {
+    group: ["**/http/**"],
+    message: "stub/store/ never imports http/",
+  }),
   {
     files: ["e2e-tests/src/pages/**/*.ts"],
-    rules: {
-      "no-magic-numbers": ["error", { ignore: [0, 1, -1], enforceConst: true }],
-    },
+    rules: { "no-magic-numbers": ["error", { ignore: [0, 1, -1], enforceConst: true }] },
   },
 );

@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 
-/** What a handler sees: the path values, the query, the headers (lower-case), the raw body, the absolute URL. */
+/** What a handler sees: path values, query, lower-case headers, the raw body, the absolute URL. */
 export type Request = {
   params: Record<string, string>;
   query: URLSearchParams;

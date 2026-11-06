@@ -1,78 +1,20 @@
-import type { ZodType } from "zod";
-
-import { badRequest, httpError, invalidState, invalidTransition } from "./errors.ts";
-import { HttpError, type Reply, type Request, Router } from "./router.ts";
-import * as domain from "./state-machine.ts";
-import * as store from "./store.ts";
-import * as schema from "./validation.ts";
+import * as schema from "../domain/schemas.ts";
+import * as domain from "../domain/state-machine.ts";
+import * as store from "../store/memory.ts";
+import { httpError, invalidState, invalidTransition } from "./errors.ts";
+import {
+  actionOf,
+  companyOf,
+  offerOf,
+  parseBody,
+  parseListQuery,
+  parseTransition,
+  tenant,
+} from "./request.ts";
+import { type Reply, type Request, Router } from "./router.ts";
 
 const now = (): string => new Date().toISOString();
 const ok = (body: unknown, status = 200): Reply => ({ status, body });
-
-/** The JSON object the text holds; malformed JSON or a non-object is a 400. */
-function parseJson(text: string): object {
-  const body = schema.jsonObject(text);
-  if (!body) throw badRequest("Request body must be a JSON object");
-  return body;
-}
-
-/** The body the schema accepts: missing is a 400; a violation is a 422 ValidationError, or a 400 where the spec documents no 422. */
-function parseBody<T>(text: string, shape: ZodType<T>, violation = 422): T {
-  if (!text) throw badRequest("Request body is required");
-  const result = shape.safeParse(parseJson(text), { reportInput: true });
-  if (result.success) return result.data;
-  if (violation === 400) throw badRequest(`Invalid body: ${schema.describe(result.error)}`);
-  throw new HttpError(422, schema.validationError(result.error));
-}
-
-/** The transition body; a field not sent is the Error shape every transition 422 has, an invalid one a ValidationError. */
-function parseTransition(text: string, action: domain.Action) {
-  const body = text ? parseJson(text) : {};
-  const result = schema.transitionRequest(action).safeParse(body, { reportInput: true });
-  if (result.success) return result.data;
-  const missingFields = schema.missingOf(result.error);
-  if (missingFields.length === 0) throw new HttpError(422, schema.validationError(result.error));
-  throw httpError(422, "VALIDATION_ERROR", "Transition requirements not met", { missingFields });
-}
-
-/** The list query, or a 400 naming the bad parameter. */
-function parseListQuery(query: URLSearchParams): schema.ListQuery {
-  const result = schema.listQuery(query);
-  if (!result.success)
-    throw badRequest(`Invalid query parameters: ${schema.describe(result.error)}`);
-  return result.data;
-}
-
-/** The header every /api/v1 call needs: missing is a 401, malformed a 400. */
-function tenant(request: Request): string {
-  const header = request.headers["x-company-id"];
-  if (!header) throw httpError(401, "UNAUTHORIZED", "Missing required header: X-Company-Id");
-  if (!schema.isUuid(header)) throw badRequest(`Invalid X-Company-Id header: '${header}'`);
-  return header;
-}
-
-/** The company's offer the path names: a malformed id is a 400, an unknown or another company's a 404. */
-function offerOf(request: Request, companyId: string): domain.Offer {
-  const id = request.params.jobOfferId ?? "";
-  if (!schema.isUuid(id)) throw badRequest(`Invalid job offer id: '${id}'`);
-  const offer = store.findOffer(companyId, id);
-  if (!offer) throw httpError(404, "NOT_FOUND", `Job offer not found: ${id}`);
-  return offer;
-}
-
-/** The transition action the path names, or a 400. */
-function actionOf(request: Request): domain.Action {
-  const action = schema.ACTION.safeParse(request.params.action);
-  if (!action.success) throw badRequest(`Unknown transition action: '${request.params.action}'`);
-  return action.data;
-}
-
-/** The path's company, which must be the header's: anything else is a 403 before any lookup. */
-function companyOf(request: Request, companyId: string): string {
-  const id = request.params.companyId ?? "";
-  if (id !== companyId) throw httpError(403, "FORBIDDEN", `Not your company: ${id}`);
-  return id;
-}
 
 /** The JobOffer response: the stored fields plus the computed ones. */
 const present = (offer: domain.Offer) => ({
@@ -88,7 +30,7 @@ const summary = (offer: domain.Offer) => ({
   locationCity: domain.cityOf(offer.location),
 });
 
-/** The reference stub: /health for the webServer probe, the spec's routes under /api/v1, each as a company. */
+/** The stub: /health for the webServer probe, the spec's routes under /api/v1, each as a company. */
 const router = new Router().on("GET", "/health", () => ok({ status: "ok" }));
 const route = (
   method: string,

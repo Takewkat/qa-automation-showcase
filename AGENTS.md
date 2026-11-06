@@ -29,7 +29,7 @@ Run Claude Code from this folder: hooks and settings load from it. Reports go un
 |---|---|---|
 | E2E specs drive page objects through fixtures: never `page`, a locator or a selector | eslint; hook `guard-boundaries` | `Specs drive page objects from fixtures` |
 | API specs call endpoint classes with a company fixture, `new GetJobOffer(company).get<ErrorResponse>(id, 404)`: never `request`, `.json()`, `.status()` | eslint; hook `guard-boundaries` | `Specs call endpoint methods` |
-| Expected states come from `src/oracle.ts`; `src/` and `tests/` never import `stub/`, `stub/` never imports `src/` | eslint; hook `guard-boundaries` | `the oracle stays independent` |
+| Expected states come from `src/oracle.ts`; `src/` and `tests/` never import `stub/`, `stub/` never imports `src/`; inside the stub `domain/` imports neither `http/` nor `store/` | eslint; hook `guard-boundaries` | `the oracle stays independent`, `stub/domain/ imports neither http/ nor store/` |
 | A `test()` title starts with its scenario ID `XXX-000`, a row of `docs/test-scenarios.md`, both directions | eslint; `npm run traceability` | `A test title starts with its scenario ID`, `XXX-000 is documented but has no test` |
 | A `test()` carries, in its own options, its folder tag and exactly one layer tag: `@happy-path`, `@validation-error`, `@error-case` | `npm run traceability` | `carries @offers; expected @offers and one of ...` |
 | A sandbox per test: a fresh `companyId` (API), run-id data and own-title assertions (E2E) | agent `harness-reviewer` | |

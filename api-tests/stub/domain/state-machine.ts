@@ -1,4 +1,4 @@
-import type { Compensation, Location } from "./validation.ts";
+import type { Compensation, Location } from "./schemas.ts";
 
 /** The spec's JobOfferStatus values, in workflow order. */
 export const STATUSES = [
@@ -109,7 +109,7 @@ export const isComplete = (compensation?: Compensation): boolean =>
 export const requiresComplete = (from: Status, action: Action, flags: Flags): boolean =>
   EDITABLE.includes(from) && !EDITABLE.includes(targetStatus(action, flags));
 
-/** What the action still needs before the offer may leave the editable statuses; empty when it may proceed. */
+/** What the action still needs before the offer leaves the editable statuses; empty when it may. */
 export const blockers = (offer: Offer, action: Action, flags: Flags): string[] =>
   requiresComplete(offer.status, action, flags) ? missingFields(offer.compensation) : [];
 
@@ -136,7 +136,7 @@ export const draft = (companyId: string, body: Body, now: string): Omit<Offer, "
   closedAt: null,
 });
 
-/** The offer after the action: publishedAt on first publication, closedAt set on close and cleared on reopen. */
+/** The offer after the action: publishedAt once, closedAt set on close and cleared on reopen. */
 export function transition(offer: Offer, flags: Flags, action: Action, now: string): Offer {
   const status = targetStatus(action, flags);
   return {

@@ -6,8 +6,8 @@ import {
   type Flags,
   type HistoryEntry,
   type Offer,
-} from "./state-machine.ts";
-import type { ListQuery } from "./validation.ts";
+} from "../domain/state-machine.ts";
+import type { ListQuery } from "../domain/schemas.ts";
 
 /** A company configuration as stored and returned. */
 export type Configuration = Flags & { companyId: string; updatedAt: string };
