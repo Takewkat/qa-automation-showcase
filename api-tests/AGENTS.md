@@ -23,7 +23,7 @@ Rules: the table in the root `AGENTS.md`. Below: the paths, the checklist, the e
 
 ## Add a scenario (bottom up; in brackets, the error when a step is skipped)
 
-1. Row in `docs/test-scenarios.md`, next ID of its group, its Priority from the levels table, and the ID in its grid cell [`test XXX-000 is not in docs/test-scenarios.md`].
+1. Row in `docs/test-scenarios.md`, next ID of its group, its Priority from the levels table, and the ID in its grid cell [`test XXX-000 is not in docs/test-scenarios.md`, or `its docs row has no Priority cell` when the grid still names it].
 2. New payload: a builder in `src/test-data/job-offers.ts`; new random value: a generator in `factories.ts`. New precondition state: `offers.createIn(status, body?, flags?)`. New endpoint: one class in `src/api/<resource>/`, one export line.
 3. `test()` in the topic file that shares the precondition, or a new file from `tests/_template/`. Title `XXX-000 <scenario>`, tags `{ tag: ["@<folder>", "@<layer>", "@<priority>"] }` on the `test()` call, the priority tag a copy of the row; calls through endpoint classes with `company`; a negative case passes the expected status last and names the error type [`A test title starts with its scenario ID`, `carries ...; expected @<folder>, one of ... and one of @p1, @p2, @p3`, `carries @p2; docs say P1`].
 4. A matrix is a `const ROWS` table and one `test()` per row [`max-lines`].

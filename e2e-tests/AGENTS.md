@@ -27,7 +27,7 @@ spec -> fixtures -> page object -> selectors. API clients are reached through fi
 1. Selectors from `src/_template/template.selectors.ts.example`.
 2. Page object from `src/_template/template.page.ts.example` [`No magic number`, `Missing JSDoc comment`].
 3. Fixture in `src/fixtures/<domain>.fixtures.ts` on `authenticatedPage` (on `page` only for a flow that starts logged out), chained in `src/fixtures/test.ts` [`Test has unknown parameter "xPage"`].
-4. Row in `docs/test-scenarios.md`, next ID, its `Priority`, its `Tier`, `Impl = yes` [`test XXX-000 is not in docs/test-scenarios.md`].
+4. Row in `docs/test-scenarios.md`, next ID, its `Priority`, its `Tier`, `Impl = yes` [`test XXX-000 is not in docs/test-scenarios.md`, or `its docs row has no Priority cell` when the grid still names it].
 5. Spec from `tests/_template/template.spec.ts.example`: title `XXX-000 <flow>`, tags `{ tag: ["@<domain>", "@<layer>", "@<priority>", "@<tier>"] }`, `track(title)` after a UI create [`Specs drive page objects from fixtures`, `A test title starts with its scenario ID`, `carries ...; expected @<domain>, one of ..., one of @p1, @p2, @p3 and one of @smoke, ...`].
 6. `npx playwright test -c e2e-tests tests/<domain>`, then `npm run traceability`; `/verify` is the done gate.
 

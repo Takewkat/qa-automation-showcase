@@ -2,8 +2,8 @@
 
 Two test suites for a QA automation take-home (`HOMEWORK.md`), written so that a team or an agent extends them without asking.
 
-- `api-tests/` Part 1: API suite for a job-offer microservice that exists only as an OpenAPI document. Playwright `request` + TypeScript, every response validated against the spec, a reference stub keeps the suite green on a clean clone.
-- `e2e-tests/` Part 2: six user flows in three domains on the Conduit RealWorld demo. Playwright, page objects behind fixtures, API-seeded data, one cached user per run.
+- `api-tests/` Part 1: API suite for a job-offer microservice that exists only as an OpenAPI document. Playwright `request` + TypeScript, every response validated against the spec, a reference stub keeps the suite green on a clean clone. Scenarios, rationale and assumptions: `api-tests/docs/test-scenarios.md`; how to run: `api-tests/README.md`.
+- `e2e-tests/` Part 2: six user flows in three domains on the Conduit RealWorld demo. Playwright, page objects behind fixtures, API-seeded data, one cached user per run. Scenarios, rationale and assumptions: `e2e-tests/docs/test-scenarios.md`; how to run: `e2e-tests/README.md`.
 
 Status: the harness, Part 1 and Part 2 are in; both suites green on their default target.
 
@@ -22,7 +22,7 @@ npm run report:scenarios            # reports/scenarios.md: result per scenario 
 
 Every run opens with `[env] <part> on <env>: <url>`, and the HTML report carries the target in its metadata. `TEST_ENV` picks a row of `config/environments.ts`, `API_BASE_URL` or `WEB_BASE_URL` overrides one target, production is refused.
 
-Part 2 runs on the shared public demo, which limits every IP to 5 sign-up or login calls per hour and about 100 requests per 15 minutes. One run spends about 50 requests and 2 to 3 auth calls, so a second run within 15 minutes, `npm run verify` included, fails with 429 at setup or in the middle of a test; the report then says so (`rate-limited` annotation, `server requests` attachment). Wait for the window, or run Part 2 on a local Conduit: five steps in `e2e-tests/README.md`.
+Part 2 runs on the shared public demo, which limits every IP to 5 sign-up or login calls per hour and about 100 requests per 15 minutes. One run spends about 55 requests and 2 auth calls (3 on a cold cache: the setup registers the run's user), so a second run within 15 minutes, `npm run verify` included, fails with 429 at setup or in the middle of a test; the report then says so (`rate-limited` annotation, `server requests` attachment). Wait for the window, or run Part 2 on a local Conduit: five steps in `e2e-tests/README.md`.
 
 Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `npx playwright install chromium` once; `.env.example` pins `TEST_ENV`, overrides one URL or adds browsers. Runtime dependencies: Playwright, ajv with ajv-formats and yaml at the root (`shared/` uses them), faker in both parts, zod in the stub.
 

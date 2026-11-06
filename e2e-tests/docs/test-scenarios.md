@@ -60,7 +60,7 @@ Left out, and why: the wrong-password and empty-title rows (AUTH-002, ART-004) a
 
 ## Assumptions
 
-1. The target is the shared public demo, with other people's data in it and two limiters per IP: 5 register or login calls per hour, about 100 requests per 15 minutes. A 429 leaves a blank page under the navbar. The suite spends about 75 requests and 2 auth calls per run, with two workers; it is run once per change.
+1. The target is the shared public demo, with other people's data in it and two limiters per IP: 5 register or login calls per hour, about 100 requests per 15 minutes. A 429 leaves a blank page under the navbar. The suite spends about 55 requests and 2 auth calls per run, with two workers; it is run once per change.
 2. One user per run: the setup project registers it or reuses the one cached under `reports/e2e/.auth/<TEST_ENV>.json` while its token answers `GET /api/user`; the JWT has no expiry. Specs never register through the API.
 3. The app is a `HashRouter`: every screen lives under `/#/...`, a plain path is a JSON 404. The markup has no test ids: fields are found by `name`, buttons by text, lists by the test's own title or text.
 4. Users stay: the API has no delete endpoint; every username carries the run id. Tags stay as well, so seeded articles carry none.
