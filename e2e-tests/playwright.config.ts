@@ -3,7 +3,9 @@ import { defineConfig, devices } from "@playwright/test";
 import { baseUrl, lookup } from "../config/environments";
 import { reportsFor } from "../config/reporting";
 
-const { url } = baseUrl("web", "demo");
+const { environment, url } = baseUrl("web", "demo");
+
+/** No retry on the shared demo: a 429 would only get another 429 and spend the window. */
 
 const DEVICES = {
   chromium: "Desktop Chrome",
@@ -29,7 +31,7 @@ export default defineConfig({
   fullyParallel: true,
   workers: WORKERS,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI && environment !== "demo" ? 1 : 0,
   timeout: TEST_TIMEOUT_MS,
   expect: { timeout: EXPECT_TIMEOUT_MS },
   ...reportsFor("e2e"),

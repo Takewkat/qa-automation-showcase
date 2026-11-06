@@ -1,9 +1,10 @@
-import type { APIRequestContext, Browser, Fixtures, Page } from "@playwright/test";
+import type { APIRequestContext, Browser, BrowserContext, Fixtures, Page } from "@playwright/test";
 
 import type { Session, User } from "@e2e/api";
 import { AuthPage } from "@e2e/pages/auth.page";
 import { NavbarPage } from "@e2e/pages/navbar.page";
 import { AUTH_FILE, readCachedUser } from "@e2e/setup/auth-file";
+import { budget } from "@e2e/utils/requests";
 
 /** The run's user as the setup project cached it. */
 export type ApiUser = Pick<User, "username" | "email" | "token">;
@@ -26,19 +27,26 @@ const cachedUser = (baseURL: string | undefined): ApiUser => {
   return { username: user.username, email: user.email, token: user.token };
 };
 
-/** One user per run, registered by the setup project and shared by every test: the demo allows 5 register or login calls per hour per IP. authPage and navbar sit on the plain page, logged out. */
+/** One user per run, registered by the setup project and shared by every test: the demo allows 5 register or login calls per hour per IP. authPage and navbar sit on the plain page, logged out. Every context is budgeted: see utils/requests. */
 export const authFixtures: Fixtures<
   AuthFixtures,
   object,
-  { request: APIRequestContext; baseURL?: string; page: Page },
+  { request: APIRequestContext; baseURL?: string; page: Page; context: BrowserContext },
   { browser: Browser }
 > = {
   apiUser: ({ baseURL }, use) => use(cachedUser(baseURL)),
   session: ({ request, apiUser }, use) => use({ request, token: apiUser.token }),
   anonymous: ({ request }, use) => use({ request }),
-  authenticatedPage: async ({ browser }, use) => {
+  context: async ({ context }, use, info) => {
+    const report = await budget(context, info);
+    await use(context);
+    await report();
+  },
+  authenticatedPage: async ({ browser }, use, info) => {
     const context = await browser.newContext({ storageState: AUTH_FILE });
+    const report = await budget(context, info);
     await use(await context.newPage());
+    await report();
     await context.close();
   },
   authPage: ({ page }, use) => use(new AuthPage(page)),
