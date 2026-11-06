@@ -6,13 +6,13 @@ Six user flows on the Conduit RealWorld demo (`docs/test-scenarios.md`): Playwri
 
 | Command | Runs |
 |---|---|
-| `npm run test:e2e` (from the root) or `npm test` / `npm run test:demo` (here) | the suite on the public demo, Chromium, once per 15 minutes |
-| `npm run test:e2e:local` (root) or `npm run test:local` (here) | the same suite on a local Conduit (`localhost:3000`, below), as often as you like |
+| `npm run test:demo:run` (here) or `npm run test:e2e:demo` (root); `npm test` is the same | the suite on the public demo, Chromium, once per 15 minutes |
+| `npm run test:local:run` (here) or `npm run test:e2e:local` (root) | the same suite on a local Conduit (`localhost:3000`, below), as often as you like |
 | `WEB_BASE_URL=https://host npm test` | an ad-hoc target |
 | `BROWSERS=chromium,firefox,webkit npm test` | more browsers (`npx playwright install` first) |
 | `npx playwright test -c e2e-tests tests/articles` | one domain |
 | `npx playwright test -c e2e-tests --grep @smoke` | one tier: `@smoke`, `@sanity`, `@regression`, `@release-check`; `--grep @p1` the critical set |
-| `npm run test:ui:local`, `npm run report` | the UI mode on the local Conduit (`test:ui` for the demo); the HTML report under `reports/e2e/` |
+| `npm run test:local:ui`, `npm run test:demo:ui`, `npm run report` | the UI mode per target; the HTML report under `reports/e2e/`, its metadata names the target |
 
 ## Structure
 
@@ -49,4 +49,4 @@ The upstream app has no limiter. Postgres in Docker, the app from source, the ba
    ```
 
 4. `npm install && npm run dev`: the web on `http://localhost:3000`, Vite proxies `/api` to the backend on 3001.
-5. `npm run test:local` from this folder, or `npm run test:e2e:local` from the root.
+5. `npm run test:local:run` from this folder, or `npm run test:e2e:local` from the root.

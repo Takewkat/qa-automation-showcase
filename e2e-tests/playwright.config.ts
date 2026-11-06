@@ -2,8 +2,10 @@ import { defineConfig, devices } from "@playwright/test";
 
 import { baseUrl, lookup } from "../config/environments";
 import { reportsFor } from "../config/reporting";
+import { log } from "../shared/log";
 
 const { environment, url } = baseUrl("web", "demo");
+if (!process.env.TEST_WORKER_INDEX) log("env", `e2e-tests on ${environment}: ${url}`);
 
 const DEVICES = {
   chromium: "Desktop Chrome",
@@ -30,6 +32,7 @@ export default defineConfig({
   workers: WORKERS,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI && environment !== "demo" ? 1 : 0,
+  metadata: { environment, url },
   timeout: TEST_TIMEOUT_MS,
   expect: { timeout: EXPECT_TIMEOUT_MS },
   ...reportsFor("e2e"),

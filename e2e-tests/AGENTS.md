@@ -1,7 +1,7 @@
 # e2e-tests: rules
 
 Stack: Playwright with TypeScript. Targets: `TEST_ENV=demo` (the public demo, default), `TEST_ENV=local` (Conduit on `localhost:3000`), `WEB_BASE_URL` for an ad-hoc one.
-Run: `npm test` or `npm run test:demo` (the public demo, budgeted), `npm run test:local` (a local Conduit, no limit), `npm run test:ui:local` to watch without spending the demo; `BROWSERS=chromium,firefox npm test` for more browsers.
+Run: `npm run test:<env>:run` or `npm run test:<env>:ui`, env `demo` (the public demo, budgeted) or `local` (a local Conduit, no limit); `npm test` is the demo; `BROWSERS=chromium,firefox npm test` for more browsers. Every run opens with `[env] e2e-tests on <env>: <url>`.
 Rules: the table in the root `AGENTS.md`. Below: the chain, the checklist, the errors.
 
 ## The 4-file chain (enforced)

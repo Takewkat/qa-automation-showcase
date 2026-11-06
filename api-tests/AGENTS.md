@@ -1,7 +1,7 @@
 # api-tests: rules
 
 Stack: TypeScript on the Playwright runner (`request` fixture), ajv contract check from `spec/job-offer-swagger.yml`, faker, a reference stub on `node:http` and zod in `stub/` (its own workspace).
-Run: `npm test` on `TEST_ENV=local` starts the stub; `TEST_ENV=staging npm test` targets that row and starts nothing; `API_BASE_URL=https://host/api/v1 npm test` for an ad-hoc target.
+Run: `npm run test:<env>:run` or `npm run test:<env>:ui`, env `local` (the stub, started by Playwright) or `staging` (that row of `config/environments.ts`, nothing started); `npm test` is local; `API_BASE_URL=https://host/api/v1 npm test` for an ad-hoc target. Every run opens with `[env] api-tests on <env>: <url>`.
 Rules: the table in the root `AGENTS.md`. Below: the paths, the checklist, the errors.
 
 ## Paths (aliases `@job-offer/*` = `src/*`, `@shared/*` = `../shared/*`)

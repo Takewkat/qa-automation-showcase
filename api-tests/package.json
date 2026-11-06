@@ -5,8 +5,11 @@
   "description": "Job Offer Microservice API tests: Playwright request, OpenAPI contract checks, reference stub on node:http",
   "scripts": {
     "test": "playwright test",
+    "test:local:run": "TEST_ENV=local playwright test",
+    "test:local:ui": "TEST_ENV=local playwright test --ui",
+    "test:staging:run": "TEST_ENV=staging playwright test",
+    "test:staging:ui": "TEST_ENV=staging playwright test --ui",
     "test:p1": "playwright test --grep @p1",
-    "test:ui": "playwright test --ui",
     "stub": "node stub/server.ts",
     "gen:types": "openapi-typescript spec/job-offer-swagger.yml -o src/generated/schema.d.ts",
     "report": "playwright show-report ../reports/api/html"
