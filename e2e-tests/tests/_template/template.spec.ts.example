@@ -1,10 +1,10 @@
 import { test } from "@e2e/fixtures/test";
 import { articleDraft } from "@e2e/test-data/factories";
 
-/** A spec reads as the user story: fixtures bring the pages, factories bring unique data. Tags: the folder, then one layer. */
+/** A spec reads as the user story: fixtures bring the pages, factories bring unique data. Tags: the folder, one layer, one tier. */
 test(
   "XXX-000 publishes an item and sees it listed",
-  { tag: ["@articles", "@happy-path"] },
+  { tag: ["@articles", "@happy-path", "@smoke"] },
   async ({ authenticatedPage, templatePage, track }) => {
     const draft = articleDraft();
     await templatePage.open();

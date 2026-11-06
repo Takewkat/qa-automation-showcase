@@ -19,7 +19,7 @@ npm run test:api                    # TEST_ENV=local by default, stub started by
 npm run test:e2e                    # TEST_ENV=demo by default
 TEST_ENV=staging npm run test:api   # any row of config/environments.ts
 npm run lint:fix                    # eslint --fix + prettier
-npm run traceability                # docs <-> tests by scenario ID, tags by folder and layer
+npm run traceability                # docs <-> tests by scenario ID, tags by folder, layer and tier (E2E)
 ```
 
 Run Claude Code from this folder: hooks and settings load from it. Reports go under `reports/<part>/` (html, json, junit, artifacts), ignored by git; `npm run report:scenarios` exits 1 when a P1 scenario did not pass.
@@ -32,7 +32,7 @@ Run Claude Code from this folder: hooks and settings load from it. Reports go un
 | API specs call endpoint classes with a company fixture, `new GetJobOffer(company).get<ErrorResponse>(id, 404)`: never `request`, `.json()`, `.status()`, nor `shared/` | eslint; hook `guard-boundaries` | `Specs call endpoint methods`, `Specs reach shared/ through endpoint classes and fixtures` |
 | Expected states come from `src/oracle.ts`; `src/` and `tests/` never import `stub/`, `stub/` imports neither `src/` nor `shared/`, `shared/` imports no part; inside the stub `domain/` imports neither `http/` nor `store/` | eslint; hook `guard-boundaries` | `the oracle stays independent`, `shared/ imports no part`, `stub/domain/ imports neither http/ nor store/` |
 | A `test()` title starts with its scenario ID `XXX-000`, a row of `docs/test-scenarios.md`, both directions | eslint; `npm run traceability` | `A test title starts with its scenario ID`, `XXX-000 is documented but has no test` |
-| A `test()` carries, in its own options, its folder tag and exactly one layer tag: `@happy-path`, `@validation-error`, `@error-case` | `npm run traceability` | `carries @offers; expected @offers and one of ...` |
+| A `test()` carries, in its own options, its folder tag and exactly one layer tag: `@happy-path`, `@validation-error`, `@error-case`; an E2E `test()` also exactly one tier tag: `@smoke`, `@sanity`, `@regression`, `@release-check` (optional in api-tests) | `npm run traceability` | `carries @offers; expected @offers and one of ...`; E2E: `expected @articles, one of ... and one of @smoke, ...` |
 | A sandbox per test: a fresh `companyId` (API), run-id data and own-title assertions (E2E) | agent `harness-reviewer` | |
 | Random data from `src/test-data/factories.ts` (faker), never `node:crypto` | eslint; hook `guard-boundaries` | `Random data comes from src/test-data/factories.ts` |
 | Created data is known to teardown: the `offers` factory (API), `track(title)` (E2E) | agent `harness-reviewer` | |

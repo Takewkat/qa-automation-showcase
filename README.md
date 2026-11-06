@@ -33,7 +33,7 @@ Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `
 | 6 | Table-driven matrices: flag combinations, invalid transitions, every operation without a header | `api-tests/tests/` |
 | 7 | Named environments with production refused; one reporter set, reports keyed by scenario ID with a P1 gate | `config/`, `scripts/scenario-report.mts` |
 | 8 | Selectors -> pages -> fixtures -> specs, import direction enforced; shared-demo discipline | `e2e-tests/src/`, ADR 0003 |
-| 9 | Docs tied to tests by scenario ID and by tag, both directions | `scripts/check-traceability.mts` |
+| 9 | Docs tied to tests by scenario ID and by tag (folder, layer, tier), both directions | `scripts/check-traceability.mts` |
 | 10 | Agent-ready: one rule source, machine-enforced, executable recipes | `AGENTS.md`, `.claude/` |
 
 Not used, on purpose: a Gherkin layer (no non-technical reader; IDs and page-object methods keep specs readable), a shared World or global cleanup list (fixtures own their data), sleeps (assertions retry), assertions on global lists of the shared demo, a mock replaying examples (Prism: transitions and tenancy would be untestable).

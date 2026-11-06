@@ -1,10 +1,15 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 
-/** Ties docs/test-scenarios.md to tests/ by scenario ID and every test() to its folder and layer tags. */
-const PARTS = ["api-tests", "e2e-tests"];
+/** Ties docs/test-scenarios.md to tests/ by scenario ID and every test() to its folder, layer and tier tags. */
 const LAYERS = ["@happy-path", "@validation-error", "@error-case"];
-const DOC_ROW = /^\|\s*([A-Z]{3,4}-\d{3})\b/;
+const TIERS = ["@smoke", "@sanity", "@regression", "@release-check"];
+/** The tag families a test() carries exactly one of, next to its folder tag: the layer in both parts, the tier in e2e-tests. */
+const PARTS = [
+  { part: "api-tests", families: [LAYERS] },
+  { part: "e2e-tests", families: [LAYERS, TIERS] },
+];
+const SCENARIO_ID = /^[A-Z]{3,4}-\d{3}$/;
 /** A test() call: title, optional options object, then the function; tags come from the tag property. */
 const TEST_CALL =
   /\btest(?:\.(?:skip|fixme|only|fail))?\(\s*([`"'])(([A-Z]{3,4}-\d{3})(?:(?!\1).)*)\1\s*,\s*(?:(\{.*?\})\s*,\s*)?(?=async\b|function\b|\(|[\w$]+\s*\()/gs;
@@ -13,18 +18,19 @@ const TAG = /@[a-z-]+/g;
 
 type Spec = { file: string; folder: string; id: string; title: string; tags: string[] };
 
-/** IDs of documented scenarios marked as implemented (a trailing "no" cell means designed only). */
+/** IDs of documented scenarios marked as implemented: the cell that is an ID, whatever its column; a trailing "no" cell means designed only. */
 function documentedIds(part: string): Set<string> {
   const file = join(part, "docs", "test-scenarios.md");
   if (!existsSync(file)) return new Set();
   const ids = new Set<string>();
   for (const line of readFileSync(file, "utf8").split("\n")) {
-    const match = DOC_ROW.exec(line);
+    if (!line.startsWith("|")) continue;
     const cells = line
       .split("|")
       .map((cell) => cell.trim())
       .filter(Boolean);
-    if (match && cells.at(-1)?.toLowerCase() !== "no") ids.add(match[1]);
+    const id = cells.find((cell) => SCENARIO_ID.test(cell));
+    if (id && cells.at(-1)?.toLowerCase() !== "no") ids.add(id);
   }
   return ids;
 }
@@ -47,23 +53,28 @@ function specs(part: string): Spec[] {
   return found;
 }
 
-/** The fault of a test's tags, if any: its folder tag and exactly one layer tag are expected. */
-function tagFault(spec: Spec): string | undefined {
-  const layers = spec.tags.filter((tag) => LAYERS.includes(tag));
-  if (spec.tags.includes(`@${spec.folder}`) && layers.length === 1) return undefined;
+/** The fault of a test's tags, if any: its folder tag and exactly one tag of each family are expected. */
+function tagFault(spec: Spec, families: string[][]): string | undefined {
+  const oneOfEach = families.every(
+    (family) => spec.tags.filter((tag) => family.includes(tag)).length === 1,
+  );
+  if (spec.tags.includes(`@${spec.folder}`) && oneOfEach) return undefined;
   const carried = spec.tags.length ? spec.tags.join(" ") : "no tag";
-  return `"${spec.title}" in ${spec.file} carries ${carried}; expected @${spec.folder} and one of ${LAYERS.join(", ")}`;
+  const expected = [`@${spec.folder}`, ...families.map((family) => `one of ${family.join(", ")}`)];
+  return `"${spec.title}" in ${spec.file} carries ${carried}; expected ${expected.slice(0, -1).join(", ")} and ${expected.at(-1)}`;
 }
 
 const missing = (from: Set<string>, inSet: Set<string>) =>
   [...from].filter((id) => !inSet.has(id)).sort();
 
 let failures = 0;
-for (const part of PARTS) {
+for (const { part, families } of PARTS) {
   const docs = documentedIds(part);
   const found = specs(part);
   const tests = new Set(found.map((spec) => spec.id));
-  const faults = found.map(tagFault).filter((fault) => fault !== undefined);
+  const faults = found
+    .map((spec) => tagFault(spec, families))
+    .filter((fault) => fault !== undefined);
   for (const id of missing(docs, tests))
     console.error(`${part}: ${id} is documented but has no test`);
   for (const id of missing(tests, docs))
