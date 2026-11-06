@@ -41,7 +41,7 @@ The brief's three levels, read for this service. The Priority cell of a row is t
 
 The header is the only wall between companies, so every mutation and read is tried from the wrong side.
 
-| ID | Scenario | Preconditions | Request | Status | Expected | Priority |
+| ID | Scenario | Preconditions | Request | Expected Status | Expected Result | Priority |
 |---|---|---|---|---|---|---|
 | TEN-001 | (M) Header contract | none | each of the 10 operations without `X-Company-Id`; GET `/job-offers` with `X-Company-Id: not-a-uuid` | 401 x10; 400 | `Error` body, refused before any lookup | P1 |
 | TEN-002 | (M) Not yours and not there look the same | offer of A | GET `/job-offers/{idA}` as B; GET a random UUID as A | 404 each | `Error` body, never 403, no offer field | P1 |
@@ -51,7 +51,7 @@ The header is the only wall between companies, so every mutation and read is tri
 
 ## Offers (`tests/offers/`)
 
-| ID | Scenario | Preconditions | Request | Status | Expected | Priority |
+| ID | Scenario | Preconditions | Request | Expected Status | Expected Result | Priority |
 |---|---|---|---|---|---|---|
 | OFR-001 | Create and read back | none | POST `/job-offers` complete; GET | 201; 200 | `Location` header a URI; DRAFT, `isComplete` true, `companyId` = header, `availableTransitions` `[submit]`, `publishedAt` and `closedAt` null; GET equals POST | P1 |
 | OFR-002 | (M) Update in editable states only | one offer per status | PUT a new title | 200 DRAFT, TO_FINALIZE; 409 others | 409 `INVALID_STATE`, `allowedStatuses` `[DRAFT, TO_FINALIZE]`, title unchanged | P1 |
@@ -64,7 +64,7 @@ The header is the only wall between companies, so every mutation and read is tri
 
 Expected statuses come from `src/oracle.ts`, written from the spec.
 
-| ID | Scenario | Preconditions | Request | Status | Expected | Priority |
+| ID | Scenario | Preconditions | Request | Expected Status | Expected Result | Priority |
 |---|---|---|---|---|---|---|
 | WFL-001 | (M) Happy path per flag combination, then close | flags of the row; a complete offer | forward action until PUBLISHED, then `close`; GET `/transitions` after each | 200 each | status per the oracle; `availableTransitions` equals `GET /transitions`; `publishedAt`, `closedAt` set | P1 |
 | WFL-002 | (M) Invalid transitions | one offer per (status, action) pair of the oracle | POST `/transitions/{action}` | 400 each | `INVALID_TRANSITION` with `currentStatus`, `requestedAction`, `validActions`; status and history unchanged | P1 |
@@ -76,7 +76,7 @@ Expected statuses come from `src/oracle.ts`, written from the spec.
 
 ## Configuration, listing, history
 
-| ID | Scenario | Preconditions | Request | Status | Expected | Priority |
+| ID | Scenario | Preconditions | Request | Expected Status | Expected Result | Priority |
 |---|---|---|---|---|---|---|
 | CFG-001 | Defaults, update, read back | fresh company | GET; PUT all true; GET | 200 each | all false with `companyId` = header; echoed; equal to the PUT response | P2 |
 | CFG-002 | Flags snapshotted at creation | offer A; then `approvalRequired`; offer B | `submit` A and B | 200; 200 | A PUBLISHED, B TO_APPROVE | P1 |
