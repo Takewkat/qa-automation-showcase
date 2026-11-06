@@ -1,7 +1,6 @@
-import { randomUUID } from "node:crypto";
-
 import { type ErrorResponse, GetJobOffer } from "@job-offer/api";
 import { expect, type Fixtures, test } from "@job-offer/fixtures/fixtures";
+import { generateJobOfferId } from "@job-offer/test-data/factories";
 
 type Reader = (f: Pick<Fixtures, "company" | "otherCompany" | "offers">) => Promise<object>;
 
@@ -16,7 +15,7 @@ const NOT_FOUND: { name: string; read: Reader }[] = [
   },
   {
     name: "an unknown id",
-    read: ({ company }) => new GetJobOffer(company).get<ErrorResponse>(randomUUID(), 404),
+    read: ({ company }) => new GetJobOffer(company).get<ErrorResponse>(generateJobOfferId(), 404),
   },
 ];
 

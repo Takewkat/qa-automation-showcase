@@ -1,9 +1,8 @@
-import { randomUUID } from "node:crypto";
-
 import type { APIRequestContext, Fixtures, TestInfo } from "@playwright/test";
 
 import type { Company, CompanyConfiguration } from "@job-offer/api";
 import type { WorkflowFlags } from "@job-offer/enum/job-offer.enum";
+import { generateCompanyId } from "@job-offer/test-data/factories";
 import { configure } from "@job-offer/utils/workflow";
 
 import { OffersFactory } from "./offers.factory";
@@ -37,8 +36,8 @@ export const jobOffersFixtures: Fixtures<
   object,
   { request: APIRequestContext }
 > = {
-  company: ({ request }, use) => use({ request, id: randomUUID() }),
-  otherCompany: ({ request }, use) => use({ request, id: randomUUID() }),
+  company: ({ request }, use) => use({ request, id: generateCompanyId() }),
+  otherCompany: ({ request }, use) => use({ request, id: generateCompanyId() }),
   anonymous: ({ request }, use) => use({ request, id: "" }),
   malformedHeader: ({ request }, use) => use({ request, id: "not-a-uuid" }),
   offers: ({ company }, use, info) => withCleanup(new OffersFactory(company), use, info),

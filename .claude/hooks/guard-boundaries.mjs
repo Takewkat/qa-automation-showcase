@@ -9,13 +9,13 @@ const RULES = [
   },
   {
     when: /api-tests\/tests\/.*\.ts$/,
-    deny: /\brequest\.|\.json\(\)|\.status\(\)|\.request\(|\.getResponseBody\(|from ["'][^"']*stub\//,
-    rule: "specs call endpoint methods (create, get, ...), which check status and schema; never request, .json(), .status(), .request(), .getResponseBody() or the stub",
+    deny: /\brequest\.|\.json\(\)|\.status\(\)|\.request\(|\.getResponseBody\(|from ["'][^"']*stub\/|from ["']node:crypto["']/,
+    rule: "specs call endpoint methods (create, get, ...), which check status and schema; never request, .json(), .status(), .request(), .getResponseBody(), the stub or node:crypto (random data comes from src/test-data/factories.ts)",
   },
   {
     when: /api-tests\/src\/.*\.ts$/,
-    deny: /from ["'][^"']*stub\//,
-    rule: "src/ never imports stub/ (independent oracle)",
+    deny: /from ["'][^"']*stub\/|from ["']node:crypto["']/,
+    rule: "src/ never imports stub/ (independent oracle) nor node:crypto (random data comes from src/test-data/factories.ts)",
   },
   {
     when: /api-tests\/stub\/.*\.ts$/,

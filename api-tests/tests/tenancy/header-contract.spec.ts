@@ -1,7 +1,6 @@
-import { randomUUID } from "node:crypto";
-
 import { CreateJobOffer, GetJobOffer, ListJobOffers } from "@job-offer/api";
 import { type Fixtures, test } from "@job-offer/fixtures/fixtures";
+import { generateJobOfferId } from "@job-offer/test-data/factories";
 import { completeOffer } from "@job-offer/test-data/job-offers";
 
 type Callers = Pick<Fixtures, "anonymous" | "malformedHeader">;
@@ -18,7 +17,7 @@ const REFUSED: { name: string; call: (callers: Callers) => Promise<unknown> }[] 
   },
   {
     name: "get without a header",
-    call: ({ anonymous }) => new GetJobOffer(anonymous).get(randomUUID(), 401),
+    call: ({ anonymous }) => new GetJobOffer(anonymous).get(generateJobOfferId(), 401),
   },
   {
     name: "list with a malformed header",
