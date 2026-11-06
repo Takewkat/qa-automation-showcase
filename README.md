@@ -15,7 +15,7 @@ npm run verify                      # lint, format, types, both suites, traceabi
 npm run test:api                    # Part 1, TEST_ENV=local: the stub starts itself
 npm run test:e2e                    # Part 2, TEST_ENV=demo: once per 15 minutes, see below
 npm run test:<part>:<env>           # api: local, staging; e2e: demo, local. Inside a part: test:<env>:run, test:<env>:ui
-npx playwright test -c api-tests --grep @error-case   # a layer, a feature (@workflow), a priority (@p1) or a tier (@smoke)
+npx playwright test -c api-tests --grep @error-case   # a layer, a feature (@workflow) or a priority (@p1); -c e2e-tests also a tier (@smoke)
 npm run report:scenarios            # reports/scenarios.md: result per scenario ID, P1 gate
 ```
 

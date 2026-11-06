@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { BasePage } from "@e2e/pages/base.page";
 import { TEMPLATE_SELECTORS as S } from "@e2e/selectors/template.selectors";
 
-/** One class per page; every method is one test.step, assertions start with assert. */
+/** One class per page; every method is one this.step, named and logged, assertions start with assert. */
 export class TemplatePage extends BasePage {
   constructor(page: Page) {
     super(page);
@@ -14,14 +14,14 @@ export class TemplatePage extends BasePage {
   }
 
   async publish(title: string) {
-    await test.step(`Publish "${title}"`, async () => {
+    await this.step(`Publish "${title}"`, async () => {
       await this.page.fill(S.FORM.title, title);
       await this.page.click(S.FORM.submit);
     });
   }
 
   async assertItemVisible(title: string) {
-    await test.step(`Assert item "${title}" is listed`, async () => {
+    await this.step(`Assert item "${title}" is listed`, async () => {
       await expect(this.page.locator(S.LIST.itemByTitle(title))).toBeVisible();
     });
   }

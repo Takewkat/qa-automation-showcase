@@ -36,14 +36,8 @@ export const authFixtures: Fixtures<
   { browser: Browser }
 > = {
   apiUser: ({ baseURL }, use) => use(cachedUser(baseURL)),
-  session: ({ request, apiUser }, use) => {
-    log("fixture", `session: API calls as ${apiUser.username} with the cached token`);
-    return use({ request, token: apiUser.token });
-  },
-  anonymous: ({ request }, use) => {
-    log("fixture", "anonymous: API calls without a token");
-    return use({ request });
-  },
+  session: ({ request, apiUser }, use) => use({ request, token: apiUser.token }),
+  anonymous: ({ request }, use) => use({ request }),
   context: async ({ context, baseURL }, use, info) => {
     const report = await budget(context, info, baseURL);
     await use(context);

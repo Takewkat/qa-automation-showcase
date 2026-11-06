@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 import { BasePage } from "@e2e/pages/base.page";
 import { PROFILE_SELECTORS as S } from "@e2e/selectors/profile.selectors";
@@ -17,14 +17,14 @@ export class ProfilePage extends BasePage {
   }
 
   async assertArticleListed(title: string) {
-    await test.step(`Assert the profile lists "${title}"`, async () => {
+    await this.step(`Assert the profile lists "${title}"`, async () => {
       await expect(this.page.locator(S.ARTICLES.previewByTitle(title))).toBeVisible();
     });
   }
 
   /** Waits for the list to load first: an empty match before that would prove nothing. */
   async assertArticleNotListed(title: string) {
-    await test.step(`Assert the profile does not list "${title}"`, async () => {
+    await this.step(`Assert the profile does not list "${title}"`, async () => {
       await expect(this.page.locator(S.ARTICLES.loaded).first()).toBeVisible();
       await expect(this.page.locator(S.ARTICLES.previewByTitle(title))).toHaveCount(0);
     });

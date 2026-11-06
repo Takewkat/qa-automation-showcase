@@ -19,7 +19,7 @@ Six user flows on the Conduit RealWorld demo (`docs/test-scenarios.md`): Playwri
 | Layer | Path | Holds |
 |---|---|---|
 | selectors | `src/selectors/<page>.selectors.ts` | `<PAGE>_SELECTORS as const`, a group per component, functions for dynamic ones, no logic |
-| pages | `src/pages/<page>.page.ts` | one class per screen over `BasePage`, every method a `test.step`, checks named `assert...` |
+| pages | `src/pages/<page>.page.ts` | one class per screen over `BasePage`, every method a named `this.step`, checks named `assert...` |
 | fixtures | `src/fixtures/<domain>.fixtures.ts`, `test.ts` | page objects and data of one domain, chained into the `test` every spec imports |
 | specs | `tests/<domain>/<domain>-<flow>.spec.ts` | one flow each, titled `XXX-000 I can ...`, tagged domain, layer, priority, tier; fixtures and factories only |
 | api | `src/api/` | one class per Conduit endpoint, for seeding and cleanup, never for assertions |

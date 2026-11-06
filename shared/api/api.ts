@@ -65,15 +65,21 @@ export abstract class Api {
       data,
       params: searchParams(query),
     };
-    this.received = await test.step(`${this.method} ${url}`, async () => {
-      const response = await this.context.fetch(url.slice(1), options);
-      return {
-        status: response.status(),
-        headers: response.headers(),
-        body: parsed(await response.text()),
-      };
-    });
-    log("api", `${this.method} ${url} -> ${this.received.status}`);
+    const call = `${this.method} ${url}`;
+    this.received = await test
+      .step(call, async () => {
+        const response = await this.context.fetch(url.slice(1), options);
+        return {
+          status: response.status(),
+          headers: response.headers(),
+          body: parsed(await response.text()),
+        };
+      })
+      .catch((error: Error) => {
+        log("api", `${call} -> no answer: ${error.message}`);
+        throw error;
+      });
+    log("api", `${call} -> ${this.received.status}`);
   }
 
   getStatusCode(): number {
