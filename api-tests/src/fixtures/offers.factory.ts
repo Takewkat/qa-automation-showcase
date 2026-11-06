@@ -5,11 +5,12 @@ import {
   type JobOffer,
   type JobOfferStatus,
 } from "@job-offer/api";
-import { cleanupJobOffers, type Leftovers } from "@job-offer/cleanup/job-offers.cleanup";
+import { cleanupJobOffers } from "@job-offer/cleanup/job-offers.cleanup";
 import type { WorkflowFlags } from "@job-offer/enum/job-offer.enum";
 import { REACHED_WITH } from "@job-offer/oracle";
 import { completeOffer } from "@job-offer/test-data/job-offers";
 import { advance, configure } from "@job-offer/utils/workflow";
+import type { Leftovers } from "@shared/cleanup/leftovers";
 
 /** Creates offers for one company and remembers them for the cleanup. */
 export class OffersFactory {

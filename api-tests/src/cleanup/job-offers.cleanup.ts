@@ -6,11 +6,9 @@ import {
   type JobOfferStatus,
   TransitionJobOffer,
 } from "@job-offer/api";
+import type { Leftovers } from "@shared/cleanup/leftovers";
 
 const BEYOND_WITHDRAW: JobOfferStatus[] = ["PUBLISHED", "CLOSED"];
-
-/** What the teardown leaves behind, by design (kept) or by failure (failed). */
-export type Leftovers = { kept: string[]; failed: string[] };
 
 /** Removes one offer the way the spec allows; returns a note when it has to keep it. */
 async function removeJobOffer(company: Company, id: string): Promise<string | undefined> {

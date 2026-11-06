@@ -1,5 +1,4 @@
-export { Api, HTTPMethod, type Query, type RequestOptions } from "./common/api";
-export { Contract } from "./common/contract";
+export type { Query } from "@shared/api/api";
 export { type Company, JobOfferApi } from "./job-offer-api";
 export type * from "./types";
 

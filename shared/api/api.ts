@@ -33,16 +33,17 @@ const searchParams = (query: Query) => {
   return params;
 };
 
-/** One endpoint: path, method, success status, the typed call in the subclass. Holds its last response. */
+/** One endpoint: path, method, success status, the typed call in the subclass. The service class sets the headers and the contract. Holds its last response. */
 export abstract class Api {
   abstract readonly path: string;
   abstract readonly method: HTTPMethod;
   abstract readonly correctStatusCode: number;
+  /** The spec the service answers to, or undefined for a service that checks the status only. */
+  protected abstract readonly contract: Contract | undefined;
   private received?: Received;
 
   constructor(
     protected readonly context: APIRequestContext,
-    protected readonly contract: Contract,
     protected readonly headers: Record<string, string> = {},
   ) {}
 
@@ -84,8 +85,9 @@ export abstract class Api {
     expect(status, message).toBe(code);
   }
 
-  /** Validates the body and the documented headers against the contract, for the status received. */
+  /** Validates the body and the documented headers against the contract, for the status received; nothing without a contract. */
   checkSchema(): void {
+    if (!this.contract) return;
     const { status, body, headers } = this.response();
     this.contract.validate(this.method, this.path, status, body, headers);
   }

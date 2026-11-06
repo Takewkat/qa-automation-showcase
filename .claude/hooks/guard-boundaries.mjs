@@ -4,13 +4,13 @@ import { block, readInput } from "./_input.mjs";
 const RULES = [
   {
     when: /e2e-tests\/tests\/.*\.ts$/,
-    deny: /\bpage\.|\bgetBy[A-Z]\w*\(|\.locator\(|from ["'][^"']*\/(selectors|pages|api)\//,
-    rule: "specs drive page objects from fixtures; selectors, pages and api live under src/ and are reached through fixtures",
+    deny: /\bpage\.|\bgetBy[A-Z]\w*\(|\.locator\(|from ["'][^"']*\/(selectors|pages|api|shared)\/|from ["']@shared\//,
+    rule: "specs drive page objects from fixtures; selectors, pages, api and shared/ are reached through fixtures",
   },
   {
     when: /api-tests\/tests\/.*\.ts$/,
-    deny: /\brequest\.|\.json\(\)|\.status\(\)|\.request\(|\.getResponseBody\(|from ["'][^"']*stub\/|from ["']node:crypto["']/,
-    rule: "specs call endpoint methods (create, get, ...), which check status and schema; never request, .json(), .status(), .request(), .getResponseBody(), the stub or node:crypto (random data comes from src/test-data/factories.ts)",
+    deny: /\brequest\.|\.json\(\)|\.status\(\)|\.request\(|\.getResponseBody\(|from ["'][^"']*\/(stub|shared)\/|from ["']@shared\/|from ["']node:crypto["']/,
+    rule: "specs call endpoint methods (create, get, ...), which check status and schema; never request, .json(), .status(), .request(), .getResponseBody(), the stub, shared/ or node:crypto (random data comes from src/test-data/factories.ts)",
   },
   {
     when: /api-tests\/src\/.*\.ts$/,
@@ -19,8 +19,8 @@ const RULES = [
   },
   {
     when: /api-tests\/stub\/.*\.ts$/,
-    deny: /from ["'](@job-offer\/|[^"']*\/src\/)/,
-    rule: "stub/ never imports the suite",
+    deny: /from ["'](@job-offer\/|@shared\/|[^"']*\/(src|shared)\/)/,
+    rule: "stub/ never imports the suite nor shared/",
   },
   {
     when: /api-tests\/stub\/domain\/.*\.ts$/,
@@ -31,6 +31,11 @@ const RULES = [
     when: /api-tests\/stub\/store\/.*\.ts$/,
     deny: /from ["']\.\.\/http\//,
     rule: "stub/store/ never imports http/",
+  },
+  {
+    when: /\/shared\/.*\.ts$/,
+    deny: /from ["'](@job-offer\/|@e2e\/|[^"']*\/(api-tests|e2e-tests|stub)\/)/,
+    rule: "shared/ imports no part: both parts extend it",
   },
 ];
 

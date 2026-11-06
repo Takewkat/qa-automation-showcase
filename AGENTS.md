@@ -6,6 +6,7 @@ Read this first, then `api-tests/AGENTS.md` or `e2e-tests/AGENTS.md`. Every rule
 
 - `api-tests/` Part 1: Job Offer API tests, Playwright `request` + TypeScript. Target: the reference stub, or a deployment through `TEST_ENV` / `API_BASE_URL`.
 - `e2e-tests/` Part 2: Conduit E2E flows, live demo by default.
+- `shared/` what both parts extend: `api/` the endpoint base and the contract check, `cleanup/` the leftovers report. Imports no part.
 - `config/` the environments table and the reporter set. `scripts/` `verify.sh` the "done" gate, `check-traceability.mts` docs <-> tests by ID and tags, `scenario-report.mts` results per scenario.
 - `docs/decisions/` why. `HOMEWORK.md` and `api-tests/spec/` are inputs, never edited.
 
@@ -27,9 +28,9 @@ Run Claude Code from this folder: hooks and settings load from it. Reports go un
 
 | Rule | Checked by | Error text |
 |---|---|---|
-| E2E specs drive page objects through fixtures: never `page`, a locator or a selector | eslint; hook `guard-boundaries` | `Specs drive page objects from fixtures` |
-| API specs call endpoint classes with a company fixture, `new GetJobOffer(company).get<ErrorResponse>(id, 404)`: never `request`, `.json()`, `.status()` | eslint; hook `guard-boundaries` | `Specs call endpoint methods` |
-| Expected states come from `src/oracle.ts`; `src/` and `tests/` never import `stub/`, `stub/` never imports `src/`; inside the stub `domain/` imports neither `http/` nor `store/` | eslint; hook `guard-boundaries` | `the oracle stays independent`, `stub/domain/ imports neither http/ nor store/` |
+| E2E specs drive page objects through fixtures: never `page`, a locator, a selector or `shared/` | eslint; hook `guard-boundaries` | `Specs drive page objects from fixtures` |
+| API specs call endpoint classes with a company fixture, `new GetJobOffer(company).get<ErrorResponse>(id, 404)`: never `request`, `.json()`, `.status()`, nor `shared/` | eslint; hook `guard-boundaries` | `Specs call endpoint methods`, `Specs reach shared/ through endpoint classes and fixtures` |
+| Expected states come from `src/oracle.ts`; `src/` and `tests/` never import `stub/`, `stub/` imports neither `src/` nor `shared/`, `shared/` imports no part; inside the stub `domain/` imports neither `http/` nor `store/` | eslint; hook `guard-boundaries` | `the oracle stays independent`, `shared/ imports no part`, `stub/domain/ imports neither http/ nor store/` |
 | A `test()` title starts with its scenario ID `XXX-000`, a row of `docs/test-scenarios.md`, both directions | eslint; `npm run traceability` | `A test title starts with its scenario ID`, `XXX-000 is documented but has no test` |
 | A `test()` carries, in its own options, its folder tag and exactly one layer tag: `@happy-path`, `@validation-error`, `@error-case` | `npm run traceability` | `carries @offers; expected @offers and one of ...` |
 | A sandbox per test: a fresh `companyId` (API), run-id data and own-title assertions (E2E) | agent `harness-reviewer` | |

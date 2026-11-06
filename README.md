@@ -19,17 +19,17 @@ npx playwright test -c api-tests --grep @error-case   # one layer, a feature (@w
 npm run report:scenarios            # reports/scenarios.md: result per scenario ID, P1 gate
 ```
 
-Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `npx playwright install chromium` once; `.env.example` pins `TEST_ENV`, overrides one URL or adds browsers. Four runtime dependencies in the suite (Playwright, ajv, yaml, faker), one in the stub (zod).
+Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `npx playwright install chromium` once; `.env.example` pins `TEST_ENV`, overrides one URL or adds browsers. Runtime dependencies: Playwright, ajv with ajv-formats and yaml at the root (`shared/` uses them), faker in `api-tests/`, zod in the stub.
 
 ## Practices shown
 
 | # | Practice | Where |
 |---|---|---|
 | 1 | Test design on two axes, feature by layer; a grid of every documented status per operation | `api-tests/docs/test-scenarios.md`, ADR 0006 |
-| 2 | OpenAPI as the contract: every response validated, types generated | `api-tests/src/api/common/contract.ts`, ADR 0005 |
-| 3 | One class per endpoint over a generic base | `api-tests/src/api/`, ADR 0004 |
+| 2 | OpenAPI as the contract: every response validated, types generated | `shared/api/contract.ts`, ADR 0005 |
+| 3 | One class per endpoint over a generic base, the base shared by both parts | `shared/api/api.ts`, `api-tests/src/api/`, ADR 0004 |
 | 4 | An oracle independent of the system under test, lint-enforced | `api-tests/src/oracle.ts`, ADR 0002 |
-| 5 | A tenant per test: parallel-safe, exact assertions, state-aware teardown | `api-tests/src/fixtures/`, `src/cleanup/`, ADR 0001 |
+| 5 | A tenant per test: parallel-safe, exact assertions, state-aware teardown | `api-tests/src/fixtures/`, `src/cleanup/`, `shared/cleanup/`, ADR 0001 |
 | 6 | Table-driven matrices: flag combinations, invalid transitions, every operation without a header | `api-tests/tests/` |
 | 7 | Named environments with production refused; one reporter set, reports keyed by scenario ID with a P1 gate | `config/`, `scripts/scenario-report.mts` |
 | 8 | Selectors -> pages -> fixtures -> specs, import direction enforced; shared-demo discipline | `e2e-tests/src/`, ADR 0003 |

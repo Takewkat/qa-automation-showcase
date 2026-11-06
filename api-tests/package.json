@@ -12,10 +12,7 @@
     "report": "playwright show-report ../reports/api/html"
   },
   "dependencies": {
-    "@faker-js/faker": "10.6.0",
-    "ajv": "8.20.0",
-    "ajv-formats": "3.0.1",
-    "yaml": "2.9.1"
+    "@faker-js/faker": "10.6.0"
   },
   "devDependencies": {
     "openapi-typescript": "7.13.0"

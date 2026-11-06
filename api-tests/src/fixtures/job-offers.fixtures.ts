@@ -4,6 +4,7 @@ import type { Company, CompanyConfiguration } from "@job-offer/api";
 import type { WorkflowFlags } from "@job-offer/enum/job-offer.enum";
 import { generateCompanyId } from "@job-offer/test-data/factories";
 import { configure } from "@job-offer/utils/workflow";
+import { reportLeftovers } from "@shared/cleanup/leftovers";
 
 import { OffersFactory } from "./offers.factory";
 
@@ -18,16 +19,14 @@ export type JobOffersFixtures = {
   configure: (flags: Partial<WorkflowFlags>) => Promise<CompanyConfiguration>;
 };
 
-/** Hands the factory to the test, then cleans up: what was kept goes to the report, what failed to stderr. */
+/** Hands the factory to the test, then reports what the teardown left. */
 const withCleanup = async (
   factory: OffersFactory,
   use: (f: OffersFactory) => Promise<void>,
   info: TestInfo,
 ) => {
   await use(factory);
-  const { kept, failed } = await factory.teardown();
-  if (kept.length) await info.attach("cleanup", { body: kept.join("\n") });
-  if (failed.length) console.warn(`[cleanup] ${info.title}\n${failed.join("\n")}`);
+  await reportLeftovers(info, await factory.teardown());
 };
 
 /** Every test runs as a fresh company; a second company and two bad callers are one fixture away. */

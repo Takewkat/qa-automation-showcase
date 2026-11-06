@@ -10,6 +10,7 @@ export type Request = {
 };
 /** What a handler answers: a status, a JSON body unless there is none, extra headers. */
 export type Reply = { status: number; body?: unknown; headers?: Record<string, string> };
+/** What a route runs: the parsed request in, a reply out. */
 export type Handler = (request: Request) => Reply;
 type Route = { method: string; pattern: RegExp; keys: string[]; handler: Handler };
 

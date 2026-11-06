@@ -4,12 +4,12 @@ Stack: TypeScript on the Playwright runner (`request` fixture), ajv contract che
 Run: `npm test` on `TEST_ENV=local` starts the stub; `TEST_ENV=staging npm test` targets that row and starts nothing; `API_BASE_URL=https://host/api/v1 npm test` for an ad-hoc target.
 Rules: the table in the root `AGENTS.md`. Below: the paths, the checklist, the errors.
 
-## Paths (alias `@job-offer/*` = `src/*`)
+## Paths (aliases `@job-offer/*` = `src/*`, `@shared/*` = `../shared/*`)
 
 | Path | Holds |
 |---|---|
 | `spec/job-offer-swagger.yml`, `src/generated/schema.d.ts` | the contract, verbatim, and its types (`npm run gen:types`, committed) |
-| `src/api/common/api.ts`, `contract.ts` | the generic base of an endpoint: `getUrl`, `request`, `checkStatusCode`, `checkSchema`, `getResponseBody`; `send` runs the four. `Contract` checks a response against the spec |
+| `shared/api/api.ts`, `contract.ts` | the generic base of an endpoint, shared with e2e-tests: `getUrl`, `request`, `checkStatusCode`, `checkSchema`, `getResponseBody`; `send` runs the four. `Contract` checks a response against the spec; a service that sets `undefined` checks the status only |
 | `src/api/job-offer-api.ts`, `types.ts` | the service over that base: spec file, `X-Company-Id`; the spec's models by name (`JobOffer`, `ErrorResponse`, `ValidationError`, ...) |
 | `src/api/<resource>/<action>.ts`, `index.ts` | one class per endpoint: `path`, `method`, `correctStatusCode`, one typed method; `get<ErrorResponse>(id, 404)` asserts that status and types the body |
 | `src/enum/job-offer.enum.ts` | `WorkflowFlags`, `JOB_OFFER_STATUSES`, `ERROR_CODES` |

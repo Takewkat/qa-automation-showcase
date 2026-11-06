@@ -111,4 +111,5 @@ route("PUT", "/companies/:companyId/configuration", (request, companyId) => {
   return ok(store.saveConfiguration(configuration));
 });
 
+/** The listener server.ts and the Playwright webServer start. */
 export const app = router.listener();

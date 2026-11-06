@@ -5,6 +5,8 @@ import playwright from "eslint-plugin-playwright";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
+import { BOUNDARIES } from "./eslint.boundaries.mjs";
+
 /** Size budgets: a file or function past the budget is split, never silenced. */
 const lines = (max) => ["error", { max, skipBlankLines: true, skipComments: true }];
 
@@ -30,15 +32,6 @@ const noSyntax = (files, ...rules) => ({
   files,
   rules: { "no-restricted-syntax": ["error", ...titleWithoutId, titleNotLiteral, ...rules] },
 });
-
-/** Layer boundaries: a folder that must not import from another one, with the reason. */
-const noImports = (files, ...patterns) => ({
-  files,
-  rules: { "no-restricted-imports": ["error", { patterns }] },
-});
-
-const ORACLE = "the oracle stays independent";
-const FACTORIES = "Random data comes from src/test-data/factories.ts";
 
 export default tseslint.config(
   { ignores: ["**/node_modules/", "**/reports/", "**/*.example", "**/generated/"] },
@@ -90,10 +83,6 @@ export default tseslint.config(
       message: "Specs call page-object methods from fixtures, never a locator (AGENTS.md)",
     },
   ),
-  noImports(["e2e-tests/tests/**/*.ts"], {
-    group: ["**/selectors/**", "**/pages/**", "**/api/**"],
-    message: "Specs import fixtures and test-data only; the rest is reached through fixtures",
-  }),
   noSyntax(
     ["api-tests/tests/**/*.ts"],
     {
@@ -106,23 +95,7 @@ export default tseslint.config(
       message: "Specs call endpoint methods, never the request primitives (AGENTS.md)",
     },
   ),
-  noImports(
-    ["api-tests/tests/**/*.ts", "api-tests/src/**/*.ts"],
-    { group: ["**/stub/**"], message: `Tests and src never import stub/: ${ORACLE}` },
-    { group: ["node:crypto", "crypto"], message: FACTORIES },
-  ),
-  noImports(["api-tests/stub/**/*.ts"], {
-    group: ["@job-offer/*", "**/src/**"],
-    message: `stub/ never imports the suite: ${ORACLE}`,
-  }),
-  noImports(["api-tests/stub/domain/**/*.ts"], {
-    group: ["**/http/**", "**/store/**"],
-    message: "stub/domain/ imports neither http/ nor store/: they depend on it",
-  }),
-  noImports(["api-tests/stub/store/**/*.ts"], {
-    group: ["**/http/**"],
-    message: "stub/store/ never imports http/",
-  }),
+  ...BOUNDARIES,
   {
     files: ["e2e-tests/src/pages/**/*.ts"],
     rules: { "no-magic-numbers": ["error", { ignore: [0, 1, -1], enforceConst: true }] },

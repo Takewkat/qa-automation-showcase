@@ -1,4 +1,4 @@
-import { HTTPMethod } from "../common/api";
+import { HTTPMethod } from "@shared/api/api";
 import { JobOfferApi } from "../job-offer-api";
 import type { JobOffer } from "../types";
 

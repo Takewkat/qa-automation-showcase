@@ -12,7 +12,7 @@ spec -> fixtures -> page object -> selectors. API clients are reached through fi
 |---|---|
 | `src/selectors/<page>.selectors.ts` | `<PAGE>_SELECTORS as const`: one group per component, functions for dynamic selectors, no logic |
 | `src/pages/<page>.page.ts` | one class extending `BasePage`, every method in `test.step()`, assertions prefixed `assert`; `getByRole` is fine here, raw CSS only from the selectors file |
-| `src/api/` | thin typed wrappers over `APIRequestContext`, for seeding and cleanup |
+| `src/api/` | one class per endpoint over `@shared/api/api`, the api-tests shape, for login, seeding and cleanup; the service class sets the Token header and no contract, so a precondition call checks its status only |
 | `src/fixtures/<domain>.fixtures.ts`, `test.ts` | page objects and data of one domain; `test.ts` chains the domains and exports `test` |
 | `authenticatedPage`, `track(title)` | a user registered through the API, session injected into `localStorage`; a UI-created article, found in teardown by its title among the user's own, then deleted |
 | `src/test-data/factories.ts` | users, articles and comments carrying the run id |

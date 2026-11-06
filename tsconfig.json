@@ -3,10 +3,17 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@shared/*": ["shared/*"],
       "@job-offer/*": ["api-tests/src/*"],
       "@e2e/*": ["e2e-tests/src/*"]
     }
   },
-  "include": ["config/**/*.ts", "scripts/**/*.mts", "api-tests/**/*.ts", "e2e-tests/**/*.ts"],
+  "include": [
+    "config/**/*.ts",
+    "scripts/**/*.mts",
+    "shared/**/*.ts",
+    "api-tests/**/*.ts",
+    "e2e-tests/**/*.ts"
+  ],
   "exclude": ["**/node_modules", "reports"]
 }
