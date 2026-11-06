@@ -1,4 +1,4 @@
-import { HTTPMethod } from "../http-method";
+import { HTTPMethod } from "../common/api";
 import { JobOfferApi } from "../job-offer-api";
 
 /** DELETE /job-offers/{jobOfferId}: allowed in DRAFT only. */

@@ -2,9 +2,6 @@ import type { components } from "@job-offer/generated/schema";
 
 type Schemas = components["schemas"];
 
-/** Query values of a list call; an array repeats the key. */
-export type Query = Record<string, string | number | readonly (string | number)[]>;
-
 export type Address = Schemas["Address"];
 export type Location = Schemas["Location"];
 export type SalaryEntry = Schemas["SalaryEntry"];
