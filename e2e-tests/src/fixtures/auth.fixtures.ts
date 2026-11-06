@@ -5,6 +5,7 @@ import { AuthPage } from "@e2e/pages/auth.page";
 import { NavbarPage } from "@e2e/pages/navbar.page";
 import { AUTH_FILE, readCachedUser } from "@e2e/setup/auth-file";
 import { budget } from "@e2e/utils/requests";
+import { log } from "@shared/log";
 
 /** The run's user as the setup project cached it. */
 export type ApiUser = Pick<User, "username" | "email" | "token">;
@@ -35,14 +36,18 @@ export const authFixtures: Fixtures<
   { browser: Browser }
 > = {
   apiUser: ({ baseURL }, use) => use(cachedUser(baseURL)),
-  session: ({ request, apiUser }, use) => use({ request, token: apiUser.token }),
+  session: ({ request, apiUser }, use) => {
+    log("fixture", `session as ${apiUser.username}`);
+    return use({ request, token: apiUser.token });
+  },
   anonymous: ({ request }, use) => use({ request }),
   context: async ({ context, baseURL }, use, info) => {
     const report = await budget(context, info, baseURL);
     await use(context);
     await report();
   },
-  authenticatedPage: async ({ browser, baseURL }, use, info) => {
+  authenticatedPage: async ({ browser, baseURL, apiUser }, use, info) => {
+    log("fixture", `authenticatedPage as ${apiUser.username}, context from ${AUTH_FILE}`);
     const context = await browser.newContext({ storageState: AUTH_FILE });
     const report = await budget(context, info, baseURL);
     await use(await context.newPage());

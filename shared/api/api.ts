@@ -1,5 +1,6 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
 
+import { log } from "../log";
 import type { Contract } from "./contract";
 
 /** The methods the specs use. */
@@ -72,6 +73,7 @@ export abstract class Api {
         body: parsed(await response.text()),
       };
     });
+    log("api", `${this.method} ${url} -> ${this.received.status}`);
   }
 
   getStatusCode(): number {

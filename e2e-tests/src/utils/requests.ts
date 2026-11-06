@@ -1,5 +1,7 @@
 import type { BrowserContext, Request, Route, TestInfo } from "@playwright/test";
 
+import { log } from "@shared/log";
+
 type Cached = { status: number; contentType: string; body: Buffer };
 /** What reached the server from one context: calls under /api/ and loads of the app itself. */
 export type Sent = { api: string[]; app: string[] };
@@ -74,6 +76,7 @@ export async function budget(
   });
   return async () => {
     const summary = `api ${sent.api.length}, app ${sent.app.length}`;
+    log("budget", `server requests: ${summary}`);
     await info.attach("server requests", { body: [summary, ...sent.api, ...sent.app].join("\n") });
     for (const hit of limited) info.annotations.push({ type: "rate-limited", description: hit });
   };
