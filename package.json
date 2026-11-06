@@ -19,6 +19,7 @@
     "typecheck": "tsc -p tsconfig.json",
     "test:api": "npm test --prefix api-tests",
     "test:e2e": "npm test --prefix e2e-tests",
+    "test:e2e:local": "npm run test:local --prefix e2e-tests",
     "traceability": "node scripts/check-traceability.mts",
     "report:scenarios": "node scripts/scenario-report.mts",
     "report:api": "playwright show-report reports/api/html",

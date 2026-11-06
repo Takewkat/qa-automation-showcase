@@ -4,11 +4,14 @@
   "private": true,
   "description": "Conduit RealWorld E2E flows: Playwright, page objects, API-seeded data",
   "scripts": {
-    "test": "playwright test --pass-with-no-tests",
+    "test": "playwright test",
+    "test:demo": "TEST_ENV=demo playwright test",
+    "test:local": "TEST_ENV=local playwright test",
     "test:smoke": "playwright test --grep @smoke",
     "test:p1": "playwright test --grep @p1",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
+    "test:ui:local": "TEST_ENV=local playwright test --ui",
     "report": "playwright show-report ../reports/e2e/html"
   },
   "dependencies": {

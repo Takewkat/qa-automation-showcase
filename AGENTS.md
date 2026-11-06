@@ -16,7 +16,7 @@ Read this first, then `api-tests/AGENTS.md` or `e2e-tests/AGENTS.md`. Every rule
 npm ci
 npm run verify                      # done = exit 0
 npm run test:api                    # TEST_ENV=local by default, stub started by Playwright
-npm run test:e2e                    # TEST_ENV=demo by default
+npm run test:e2e                    # TEST_ENV=demo by default; test:e2e:local for a local Conduit
 TEST_ENV=staging npm run test:api   # any row of config/environments.ts
 npm run lint:fix                    # eslint --fix + prettier
 npm run traceability                # docs <-> tests by scenario ID, tags by folder, layer, priority and tier (E2E)
