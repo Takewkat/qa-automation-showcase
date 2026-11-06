@@ -17,12 +17,13 @@ const AS_OTHER: { name: string; call: (other: Company, companyId: string) => Pro
   ];
 
 for (const row of AS_OTHER) {
-  test(`TEN-005 ${row.name} of another company's configuration is forbidden`, async ({
-    company,
-    otherCompany,
-  }) => {
-    await row.call(otherCompany, company.id);
-    const untouched = await new GetCompanyConfiguration(company).get();
-    expect(untouched).toMatchObject(NO_FLAGS);
-  });
+  test(
+    `TEN-005 ${row.name} of another company's configuration is forbidden`,
+    { tag: ["@tenancy", "@error-case"] },
+    async ({ company, otherCompany }) => {
+      await row.call(otherCompany, company.id);
+      const untouched = await new GetCompanyConfiguration(company).get();
+      expect(untouched).toMatchObject(NO_FLAGS);
+    },
+  );
 }

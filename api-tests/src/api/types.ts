@@ -5,6 +5,7 @@ type Schemas = components["schemas"];
 export type Address = Schemas["Address"];
 export type Location = Schemas["Location"];
 export type SalaryEntry = Schemas["SalaryEntry"];
+export type Compensation = Schemas["Compensation"];
 export type JobOffer = Schemas["JobOffer"];
 export type JobOfferPage = Schemas["JobOfferPage"];
 export type JobOfferStatus = Schemas["JobOfferStatus"];

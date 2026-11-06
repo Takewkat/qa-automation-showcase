@@ -12,8 +12,8 @@ Report violations only, one line each: `<severity> <file>:<line> <rule> - <what 
 Severity:
 
 - Critical: a locator, `page` or a selectors/pages import in a spec; `request`, `.json()` or `.status()` in an API spec; `stub/` imported from `src/` or `tests/`; a test title without its scenario ID; data created without being tracked for cleanup; an assertion on a global list of the live demo; a hardcoded tenant id.
-- Major: a page-object method outside `test.step()`; an assertion method not prefixed `assert`; a magic timeout; an implemented test with no docs row or a docs row with no test; a second copy of a helper, builder or setup that exists elsewhere (name both locations); a disable directive or a raised budget.
-- Minor: naming off the conventions, a missing one-line JSDoc on an export, an inline comment.
+- Major: a test without its folder tag and exactly one layer tag (`@happy-path`, `@validation-error`, `@error-case`); a page-object method outside `test.step()`; an assertion method not prefixed `assert`; a magic timeout; an implemented test with no docs row or a docs row with no test; a second copy of a helper, builder or setup that exists elsewhere (name both locations); a disable directive or a raised budget; a `??` or `||` fallback standing in for a value the spec or the API should have returned (a documented default or an empty collection is fine); a status, action or error code typed as a bare `string`, or an error code literal outside `src/enum/`.
+- Minor: naming off the conventions, a missing one-line JSDoc on an export, an inline comment, a compound condition not named as a boolean, a matrix row read by tuple index.
 
 Never modify files, run the suites, commit, disable or skip tests, or propose a dependency.
 End with one line: `N critical, N major, N minor`.

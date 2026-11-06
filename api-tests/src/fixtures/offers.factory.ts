@@ -24,10 +24,14 @@ export class OffersFactory {
     return offer;
   }
 
-  /** Sets the flags the status needs (or the given ones), creates an offer and moves it there. */
-  async createIn(status: JobOfferStatus, flags = REACHED_WITH[status] ?? {}): Promise<JobOffer> {
+  /** Creates an offer (a complete one by default), sets the flags the status needs or the given ones, and moves it there. */
+  async createIn(
+    status: JobOfferStatus,
+    body: CreateJobOfferRequest = completeOffer(),
+    flags = REACHED_WITH[status] ?? {},
+  ): Promise<JobOffer> {
     if (Object.keys(flags).length) await configure(this.company, flags as Partial<WorkflowFlags>);
-    const offer = await this.create();
+    const offer = await this.create(body);
     return advance(this.company, offer.id, status);
   }
 

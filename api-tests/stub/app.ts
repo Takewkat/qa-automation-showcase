@@ -1,5 +1,6 @@
 import type { ZodType } from "zod";
 
+import { badRequest, httpError, invalidState, invalidTransition } from "./errors.ts";
 import { HttpError, type Reply, type Request, Router } from "./router.ts";
 import * as domain from "./state-machine.ts";
 import * as store from "./store.ts";
@@ -7,20 +8,6 @@ import * as schema from "./validation.ts";
 
 const now = (): string => new Date().toISOString();
 const ok = (body: unknown, status = 200): Reply => ({ status, body });
-const httpError = (status: number, code: string, message: string, details?: object) =>
-  new HttpError(status, { code, message, details });
-const badRequest = (message: string): HttpError => httpError(400, "BAD_REQUEST", message);
-const invalidState = (verb: string, offer: domain.Offer, allowedStatuses: domain.Status[]) =>
-  httpError(409, "INVALID_STATE", `Cannot ${verb} job offer in ${offer.status} status`, {
-    currentStatus: offer.status,
-    allowedStatuses,
-  });
-const invalidTransition = (offer: domain.Offer, action: domain.Action): HttpError =>
-  httpError(400, "INVALID_TRANSITION", `Cannot perform '${action}' from ${offer.status} status`, {
-    currentStatus: offer.status,
-    requestedAction: action,
-    validActions: domain.validActions(offer.status),
-  });
 
 /** The JSON object the text holds; malformed JSON or a non-object is a 400. */
 function parseJson(text: string): object {
@@ -29,12 +16,13 @@ function parseJson(text: string): object {
   return body;
 }
 
-/** The body the schema accepts: a 400 when missing, a 422 when it violates the schema. */
-function parseBody<T>(text: string, shape: ZodType<T>): T {
+/** The body the schema accepts: missing is a 400; a violation is a 422 ValidationError, or a 400 where the spec documents no 422. */
+function parseBody<T>(text: string, shape: ZodType<T>, violation = 422): T {
   if (!text) throw badRequest("Request body is required");
   const result = shape.safeParse(parseJson(text), { reportInput: true });
-  if (!result.success) throw new HttpError(422, schema.validationError(result.error));
-  return result.data;
+  if (result.success) return result.data;
+  if (violation === 400) throw badRequest(`Invalid body: ${schema.describe(result.error)}`);
+  throw new HttpError(422, schema.validationError(result.error));
 }
 
 /** The transition body; a field not sent is the Error shape every transition 422 has, an invalid one a ValidationError. */
@@ -176,7 +164,7 @@ route("GET", "/companies/:companyId/configuration", (request, companyId) =>
 
 route("PUT", "/companies/:companyId/configuration", (request, companyId) => {
   const id = companyOf(request, companyId);
-  const body = parseBody(request.text, schema.UPDATE_CONFIGURATION);
+  const body = parseBody(request.text, schema.UPDATE_CONFIGURATION, 400);
   const configuration = { ...domain.DEFAULT_FLAGS, ...body, companyId: id, updatedAt: now() };
   return ok(store.saveConfiguration(configuration));
 });

@@ -16,6 +16,7 @@ spec  ->  fixtures  ->  page objects / API facade  ->  selectors / contract
 | Builder / factory for test data with overrides and a run id | `api-tests/src/test-data/{factories,job-offers}.ts`, `e2e-tests/src/test-data/factories.ts` |
 | Test oracle separated from the system under test | `api-tests/src/oracle.ts` vs `api-tests/stub/state-machine.ts` |
 | Table-driven tests for combinations and invalid pairs | `api-tests/tests/workflow/` |
+| Test design on two axes, feature by layer: every test tagged with its folder and one of `@happy-path`, `@validation-error`, `@error-case`; the grid of documented statuses per operation is the checklist | `api-tests/docs/test-scenarios.md`, `scripts/check-traceability.mts` |
 | Hermetic tests: a sandbox per test (tenant UUID, run-id data), state-aware teardown | fixtures of both parts |
 | Spec-driven contract validation on every read: schema by path, method and status, ajv | `api-tests/src/api/common/contract.ts` |
 | Named environments: one table, `TEST_ENV` picks the row, production refused | `config/environments.ts`, both `playwright.config.ts` |

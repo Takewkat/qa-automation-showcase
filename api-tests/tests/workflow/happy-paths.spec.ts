@@ -25,5 +25,7 @@ const publishes =
     expect(offer.closedAt).not.toBeNull();
   };
 
-for (const row of SMOKE) test(`WFL-001 ${label(row)}`, { tag: "@smoke" }, publishes(row));
-for (const row of OPTIONAL) test(`WFL-001 ${label(row)}`, publishes(row));
+for (const row of SMOKE)
+  test(`WFL-001 ${label(row)}`, { tag: ["@workflow", "@happy-path", "@smoke"] }, publishes(row));
+for (const row of OPTIONAL)
+  test(`WFL-001 ${label(row)}`, { tag: ["@workflow", "@happy-path"] }, publishes(row));

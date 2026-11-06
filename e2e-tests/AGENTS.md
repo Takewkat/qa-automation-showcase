@@ -25,7 +25,7 @@ spec -> fixtures -> page object -> selectors. API clients are reached through fi
 2. Page object: `src/pages/<page>.page.ts` from `src/_template/template.page.ts.example` [`No magic number:`, `Missing JSDoc comment`].
 3. Fixture: add the page object to `src/fixtures/<domain>.fixtures.ts` and chain the domain in `src/fixtures/test.ts` [`Test has unknown parameter "xPage"`].
 4. Row in `docs/test-scenarios.md`, next ID, `Impl = yes` [`e2e-tests: test XXX-000 is not in docs/test-scenarios.md`].
-5. Spec: `tests/<domain>/<domain>-<flow>.spec.ts` from `tests/_template/template.spec.ts.example`, `track(title)` after a UI create [`Specs drive page objects from fixtures, never page directly`, `A test title starts with its scenario ID, for example "WFL-001 ..."`].
+5. Spec: `tests/<domain>/<domain>-<flow>.spec.ts` from `tests/_template/template.spec.ts.example`, tags `{ tag: ["@<domain>", "@<layer>"] }` with one layer of `@happy-path`, `@validation-error`, `@error-case`, `track(title)` after a UI create [`Specs drive page objects from fixtures, never page directly`, `A test title starts with its scenario ID, for example "WFL-001 ..."`].
 6. From the root: `npx playwright test -c e2e-tests tests/<domain>`, then `npm run traceability`. `/verify` is the done gate.
 
 `/add-e2e-flow` runs this list.

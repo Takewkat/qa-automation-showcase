@@ -26,7 +26,7 @@ Node 24 or newer: it runs the scripts and the stub as TypeScript, no build tool.
 
 | # | Practice | Where |
 |---|---|---|
-| 1 | Risk-based scoping: 21 scenarios, every P1 risk, exclusions explained | `api-tests/docs/test-scenarios.md` |
+| 1 | Test design on two axes, feature by layer: a grid of every documented status per operation, 24 scenarios, exclusions explained | `api-tests/docs/test-scenarios.md`, `docs/decisions/0011` |
 | 2 | OpenAPI as the contract: every response validated, types generated | `api-tests/src/api/common/contract.ts` |
 | 3 | An oracle independent of the system under test, lint-enforced | `api-tests/src/oracle.ts`, `docs/decisions/0003` |
 | 4 | A tenant per test: parallel-safe, exact assertions | `api-tests/src/fixtures/`, `docs/decisions/0002` |
@@ -35,7 +35,7 @@ Node 24 or newer: it runs the scripts and the stub as TypeScript, no build tool.
 | 7 | Named environments: `TEST_ENV` picks the row, production refused | `config/environments.ts`, `docs/decisions/0006` |
 | 8 | Selectors -> pages -> fixtures -> specs, import direction enforced | `e2e-tests/src/`, `eslint.config.mjs` |
 | 9 | Shared-demo discipline: API seeding, injected session, own-data assertions | `e2e-tests/src/fixtures/`, `docs/decisions/0004` |
-| 10 | Docs tied to tests by scenario ID, both directions | `scripts/check-traceability.mts` |
+| 10 | Docs tied to tests by scenario ID, both directions; every test tagged with its feature and one layer, checked | `scripts/check-traceability.mts` |
 | 11 | Agent-ready: one rule source, machine-enforced, executable recipes | `AGENTS.md`, `.claude/` |
 | 12 | Reports keyed by scenario ID: html, junit, json, P1 gate | `config/reporting.ts`, `scripts/scenario-report.mts`, `docs/decisions/0007` |
 | 13 | Honest reporting: time, assumptions, limits, AI use | below |

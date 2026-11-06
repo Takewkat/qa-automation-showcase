@@ -4,18 +4,23 @@ import { completeOffer } from "@job-offer/test-data/job-offers";
 
 /** One row, one test; the table sits next to the tests that read it. */
 const ROWS = [
-  { title: "a".repeat(200), expected: 201 },
-  { title: "a".repeat(201), expected: 422 },
-] as const;
+  { name: "a blank title", title: "" },
+  { name: "a 201-char title", title: "a".repeat(201) },
+];
 
-test("XXX-000 creates a complete offer and reads it back", async ({ company, offers }) => {
-  const created = await offers.create();
-  const fetched = await new GetJobOffer(company).get(created.id);
-  expect(fetched.title).toBe(created.title);
-});
+/** Tags: the folder of the file, then one layer of @happy-path, @validation-error, @error-case. */
+test(
+  "XXX-000 creates a complete offer and reads it back",
+  { tag: ["@offers", "@happy-path"] },
+  async ({ company, offers }) => {
+    const created = await offers.create();
+    const fetched = await new GetJobOffer(company).get(created.id);
+    expect(fetched.title).toBe(created.title);
+  },
+);
 
 for (const row of ROWS) {
-  test(`XXX-001 a title of ${row.title.length} chars is ${row.expected}`, async ({ company }) => {
-    await new CreateJobOffer(company).create(completeOffer({ title: row.title }), row.expected);
+  test(`XXX-001 ${row.name} is refused`, { tag: ["@offers", "@validation-error"] }, async ({ company }) => {
+    await new CreateJobOffer(company).create(completeOffer({ title: row.title }), 422);
   });
 }

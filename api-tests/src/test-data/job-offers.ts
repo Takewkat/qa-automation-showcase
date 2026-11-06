@@ -1,6 +1,15 @@
-import type { Address, CreateJobOfferRequest, Location, SalaryEntry } from "@job-offer/api";
+import type {
+  Address,
+  Compensation,
+  CreateJobOfferRequest,
+  Location,
+  SalaryEntry,
+} from "@job-offer/api";
 
 import { generateCity, generateJobTitle } from "./factories";
+
+/** The keys of a request, each allowed any value: a body the type forbids, sent on purpose. */
+type Malformed<T> = Partial<Record<keyof T, unknown>>;
 
 /** A yearly salary entry. */
 export const salary = (overrides: Partial<SalaryEntry> = {}): SalaryEntry => ({
@@ -8,6 +17,11 @@ export const salary = (overrides: Partial<SalaryEntry> = {}): SalaryEntry => ({
   amount: 65000,
   currency: "EUR",
   ...overrides,
+});
+
+/** A compensation with one salary entry. */
+export const compensation = (entry: SalaryEntry = salary()): Compensation => ({
+  salaryEntries: [entry],
 });
 
 /** A CUSTOM location with the two required address fields. */
@@ -22,7 +36,7 @@ export const completeOffer = (
 ): CreateJobOfferRequest => ({
   title: generateJobTitle(),
   location: customLocation(),
-  compensation: { salaryEntries: [salary()] },
+  compensation: compensation(),
   ...overrides,
 });
 
@@ -34,3 +48,11 @@ export const incompleteOffer = (
   location: { type: "COMPANY_ADDRESS" },
   ...overrides,
 });
+
+/** A body the request type forbids, typed as that request: null where a string is required, a string where a boolean is. */
+export const malformed = <T extends object>(body: Malformed<T>): T => body as unknown as T;
+
+/** A complete offer with fields the contract refuses. */
+export const malformedOffer = (
+  overrides: Malformed<CreateJobOfferRequest>,
+): CreateJobOfferRequest => malformed<CreateJobOfferRequest>({ ...completeOffer(), ...overrides });

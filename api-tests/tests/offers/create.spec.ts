@@ -3,7 +3,7 @@ import { expect, test } from "@job-offer/fixtures/fixtures";
 
 test(
   "OFR-001 creates a complete offer in DRAFT and reads it back",
-  { tag: "@smoke" },
+  { tag: ["@offers", "@happy-path", "@smoke"] },
   async ({ company, offers }) => {
     const created = await offers.create();
     expect(created).toMatchObject({

@@ -22,7 +22,7 @@ const NOT_FOUND: { name: string; read: Reader }[] = [
 for (const row of NOT_FOUND) {
   test(
     `TEN-002 ${row.name} reads as not found`,
-    { tag: "@smoke" },
+    { tag: ["@tenancy", "@error-case", "@smoke"] },
     async ({ company, offers, otherCompany }) => {
       const error = await row.read({ company, otherCompany, offers });
       expect(error).not.toHaveProperty("title");
