@@ -20,14 +20,14 @@ npm run report:scenarios            # reports/scenarios.md: result per scenario 
 npm run report:api                  # html report of the last API run (report:e2e for Part 2)
 ```
 
-Node 22.22 or newer (24 recommended). Playwright browsers once: `npx playwright install chromium`. Copy `.env.example` to `.env` to pin `TEST_ENV`, override one URL or add browsers.
+Node 24 or newer: it runs the scripts and the stub as TypeScript, no build tool. Playwright browsers once: `npx playwright install chromium`. Copy `.env.example` to `.env` to pin `TEST_ENV`, override one URL or add browsers.
 
 ## Practices shown
 
 | # | Practice | Where |
 |---|---|---|
 | 1 | Risk-based scoping: 21 scenarios, every P1 risk, exclusions explained | `api-tests/docs/test-scenarios.md` |
-| 2 | OpenAPI as the contract: every response validated, types generated | `api-tests/src/api/contract.ts` |
+| 2 | OpenAPI as the contract: every response validated, types generated | `api-tests/src/api/common/contract.ts` |
 | 3 | An oracle independent of the system under test, lint-enforced | `api-tests/src/oracle.ts`, `docs/decisions/0003` |
 | 4 | A tenant per test: parallel-safe, exact assertions | `api-tests/src/fixtures/`, `docs/decisions/0002` |
 | 5 | Table-driven matrices: configurations and invalid transitions | `api-tests/tests/workflow/` |
@@ -35,9 +35,9 @@ Node 22.22 or newer (24 recommended). Playwright browsers once: `npx playwright 
 | 7 | Named environments: `TEST_ENV` picks the row, production refused | `config/environments.ts`, `docs/decisions/0006` |
 | 8 | Selectors -> pages -> fixtures -> specs, import direction enforced | `e2e-tests/src/`, `eslint.config.mjs` |
 | 9 | Shared-demo discipline: API seeding, injected session, own-data assertions | `e2e-tests/src/fixtures/`, `docs/decisions/0004` |
-| 10 | Docs tied to tests by scenario ID, both directions | `scripts/check-traceability.ts` |
+| 10 | Docs tied to tests by scenario ID, both directions | `scripts/check-traceability.mts` |
 | 11 | Agent-ready: one rule source, machine-enforced, executable recipes | `AGENTS.md`, `.claude/` |
-| 12 | Reports keyed by scenario ID: html, junit, json, P1 gate | `config/reporting.ts`, `scripts/scenario-report.ts`, `docs/decisions/0007` |
+| 12 | Reports keyed by scenario ID: html, junit, json, P1 gate | `config/reporting.ts`, `scripts/scenario-report.mts`, `docs/decisions/0007` |
 | 13 | Honest reporting: time, assumptions, limits, AI use | below |
 
 Patterns and the dependency direction: `docs/architecture.md`. Decisions and trade-offs: `docs/decisions/`.

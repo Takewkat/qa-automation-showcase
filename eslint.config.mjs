@@ -1,4 +1,3 @@
-import comments from "@eslint-community/eslint-plugin-eslint-comments/configs";
 import js from "@eslint/js";
 import prettier from "eslint-config-prettier";
 import jsdoc from "eslint-plugin-jsdoc";
@@ -33,9 +32,9 @@ const noSyntax = (files, ...rules) => ({
 });
 
 /** Layer boundaries: a folder that must not import from another one, with the reason. */
-const noImports = (files, group, message) => ({
+const noImports = (files, ...patterns) => ({
   files,
-  rules: { "no-restricted-imports": ["error", { patterns: [{ group, message }] }] },
+  rules: { "no-restricted-imports": ["error", { patterns }] },
 });
 
 const ORACLE = "the oracle stays independent";
@@ -45,18 +44,17 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   jsdoc.configs["flat/recommended-typescript-error"],
-  comments.recommended,
   prettier,
   {
-    files: ["**/*.{ts,mjs}"],
+    files: ["**/*.{ts,mts,mjs}"],
     languageOptions: { globals: globals.node },
+    linterOptions: { noInlineConfig: true, reportUnusedDisableDirectives: "error" },
     rules: {
       "no-inline-comments": "error",
       "no-warning-comments": "error",
       "max-lines": lines(120),
       "max-lines-per-function": lines(40),
       complexity: ["error", 8],
-      "@eslint-community/eslint-comments/no-use": "error",
       "jsdoc/require-jsdoc": ["error", { publicOnly: true }],
       "jsdoc/require-description": "error",
       "jsdoc/require-param": "off",
@@ -91,11 +89,10 @@ export default tseslint.config(
       message: "Specs call page-object methods from fixtures, never a locator (AGENTS.md)",
     },
   ),
-  noImports(
-    ["e2e-tests/tests/**/*.ts"],
-    ["**/selectors/**", "**/pages/**", "**/api/**"],
-    "Specs import fixtures and test-data only; the rest is reached through fixtures",
-  ),
+  noImports(["e2e-tests/tests/**/*.ts"], {
+    group: ["**/selectors/**", "**/pages/**", "**/api/**"],
+    message: "Specs import fixtures and test-data only; the rest is reached through fixtures",
+  }),
   noSyntax(
     ["api-tests/tests/**/*.ts"],
     {
@@ -110,21 +107,20 @@ export default tseslint.config(
   ),
   noImports(
     ["api-tests/tests/**/*.ts", "api-tests/src/**/*.ts"],
-    ["**/stub/**"],
-    `Tests and src never import stub/: ${ORACLE}`,
+    { group: ["**/stub/**"], message: `Tests and src never import stub/: ${ORACLE}` },
+    {
+      group: ["node:crypto", "crypto"],
+      message: "Random data comes from src/test-data/factories.ts",
+    },
   ),
-  noImports(
-    ["api-tests/stub/**/*.ts"],
-    ["@job-offer/*", "**/src/**"],
-    `stub/ never imports the suite: ${ORACLE}`,
-  ),
+  noImports(["api-tests/stub/**/*.ts"], {
+    group: ["@job-offer/*", "**/src/**"],
+    message: `stub/ never imports the suite: ${ORACLE}`,
+  }),
   {
     files: ["e2e-tests/src/pages/**/*.ts"],
     rules: {
-      "no-magic-numbers": [
-        "error",
-        { ignore: [0, 1, -1], enforceConst: true, detectObjects: false },
-      ],
+      "no-magic-numbers": ["error", { ignore: [0, 1, -1], enforceConst: true }],
     },
   },
 );

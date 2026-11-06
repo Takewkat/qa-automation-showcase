@@ -1,0 +1,13 @@
+{
+  "name": "job-offer-stub",
+  "version": "0.0.0",
+  "private": true,
+  "description": "In-memory reference implementation of the Job Offer spec: a means to run the suite, not a deliverable",
+  "type": "module",
+  "scripts": {
+    "start": "node server.ts"
+  },
+  "dependencies": {
+    "zod": "4.6.7"
+  }
+}

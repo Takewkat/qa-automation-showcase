@@ -2,6 +2,6 @@
 
 Context: Part 1 ships an OpenAPI document and no server. The brief asks for a runnable collection.
 
-Decision: a small Hono stub in `api-tests/stub/` implements the spec's rules (tenancy, state machine, guards, validation). Playwright starts it as `webServer` on `TEST_ENV=local`. `TEST_ENV` or the `API_BASE_URL` override points the same suite at a real deployment (see 0006).
+Decision: a small stub on `node:http` and zod in `api-tests/stub/` implements the spec's rules (tenancy, state machine, guards, validation). Playwright starts it as `webServer` on `TEST_ENV=local`. `TEST_ENV` or the `API_BASE_URL` override points the same suite at a real deployment (see 0006).
 
 Consequences: the suite is green on a clean clone and every assertion is meaningful. The stub is extra work and not a deliverable. Its rules are checked by the suite, whose expected values come from the spec, never from the stub (see 0003). A mock replaying examples (Prism) would have made transition and tenancy scenarios untestable.

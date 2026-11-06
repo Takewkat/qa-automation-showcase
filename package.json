@@ -5,27 +5,27 @@
   "description": "API test suite for a job-offer microservice and Playwright E2E flows on Conduit RealWorld, built agent-ready",
   "license": "MIT",
   "engines": {
-    "node": ">=22.22"
+    "node": ">=24"
   },
   "workspaces": [
     "api-tests",
+    "api-tests/stub",
     "e2e-tests"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix && prettier --write .",
     "format": "prettier --check .",
     "typecheck": "tsc -p tsconfig.json",
-    "test:api": "npm test --workspace api-tests",
-    "test:e2e": "npm test --workspace e2e-tests",
-    "traceability": "tsx scripts/check-traceability.ts",
-    "report:scenarios": "tsx scripts/scenario-report.ts",
+    "test:api": "npm test --prefix api-tests",
+    "test:e2e": "npm test --prefix e2e-tests",
+    "traceability": "node scripts/check-traceability.mts",
+    "report:scenarios": "node scripts/scenario-report.mts",
     "report:api": "playwright show-report reports/api/html",
     "report:e2e": "playwright show-report reports/e2e/html",
     "verify": "bash scripts/verify.sh"
   },
   "devDependencies": {
-    "@eslint-community/eslint-plugin-eslint-comments": "4.8.1",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.64.1",
     "@types/node": "24.19.2",
@@ -35,7 +35,6 @@
     "eslint-plugin-playwright": "2.12.2",
     "globals": "17.14.0",
     "prettier": "3.9.10",
-    "tsx": "4.23.15",
     "typescript": "5.9.3",
     "typescript-eslint": "8.72.1"
   }

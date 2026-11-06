@@ -1,4 +1,4 @@
-import type { Compensation, Location } from "./validation";
+import type { Compensation, Location } from "./validation.ts";
 
 /** The spec's JobOfferStatus values, in workflow order. */
 export const STATUSES = [

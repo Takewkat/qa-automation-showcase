@@ -4,10 +4,10 @@ Read this first, then `api-tests/AGENTS.md` or `e2e-tests/AGENTS.md`. Every rule
 
 ## Map
 
-- `api-tests/` Part 1: Job Offer Microservice API tests, Playwright `request` + TypeScript. Target: the Hono reference stub, or any deployment through `TEST_ENV` or `API_BASE_URL`.
+- `api-tests/` Part 1: Job Offer Microservice API tests, Playwright `request` + TypeScript. Target: the reference stub, or any deployment through `TEST_ENV` or `API_BASE_URL`.
 - `e2e-tests/` Part 2: Conduit RealWorld E2E flows with Playwright, live demo by default.
 - `config/` the environments table and the reporter set, shared by both parts.
-- `scripts/` `verify.sh` the "done" gate, `check-traceability.ts` ties scenario tables to tests by ID, `scenario-report.ts` ties results to them.
+- `scripts/` `verify.sh` the "done" gate, `check-traceability.mts` ties scenario tables to tests by ID, `scenario-report.mts` ties results to them.
 - `docs/architecture.md` the patterns and the dependency direction. `docs/decisions/` why they were chosen.
 - `HOMEWORK.md` and `api-tests/spec/` are inputs as received, never edited. Transcribed to ASCII (arrows, dashes, one accented example), schemas untouched.
 
@@ -39,10 +39,11 @@ Run Claude Code from this folder: hooks and settings load from the primary worki
 | Expected states come from `src/oracle.ts`, written from the spec. `src/` and `tests/` never import `stub/`, `stub/` never imports `src/` | eslint `no-restricted-imports`; hook `guard-boundaries`; agent `harness-reviewer` | `the oracle stays independent` |
 | Every `test()` title starts with its scenario ID `XXX-000`, a row of `docs/test-scenarios.md`, both directions | eslint `no-restricted-syntax`; `npm run traceability` | `A test title starts with its scenario ID, for example "WFL-001 ..."`, `api-tests: XXX-000 is documented but has no test`, `e2e-tests: test XXX-000 is not in docs/test-scenarios.md` |
 | A sandbox per test: a fresh `companyId` UUID (API), run-id data and own-title assertions (E2E) | agent `harness-reviewer` | the shared id or the global list |
+| Random data comes from `src/test-data/factories.ts` (faker); specs and `src/` never import `node:crypto` | eslint `no-restricted-imports`; hook `guard-boundaries` | `Random data comes from src/test-data/factories.ts` |
 | Created data is known to teardown: the `offers` factory (API), `track(title)` after a UI create (E2E) | agent `harness-reviewer` | the untracked create |
 | Only AUTH-001 logs in through the UI; every other E2E spec starts from `authenticatedPage` | agent `harness-reviewer` | the extra UI login |
 | No hardcoded timeout or number in a page object | eslint `no-magic-numbers` | `No magic number:` and the value |
-| File budgets 120 lines (`src`), 60 (specs), 150 (`stub`); 40 per function; complexity 8; no disable directives | eslint `max-lines`, `max-lines-per-function`, `complexity`, `@eslint-community/eslint-comments/no-use` | split the file, never raise the budget |
+| File budgets 120 lines (`src`), 60 (specs), 150 (`stub`); 40 per function; complexity 8; no disable directives | eslint `max-lines`, `max-lines-per-function`, `complexity`, `linterOptions.noInlineConfig` | split the file, never raise the budget |
 | One-line JSDoc on exports only; no inline comments; no TODO | eslint `jsdoc/*`, `no-inline-comments`, `no-warning-comments` | the why goes to `docs/decisions/` or the commit |
 | ASCII only in everything the repo authors | hook `guard-ascii` | `guard-ascii:` with the line and the characters; use `-` and `->` |
 | Prettier formatting | `npm run format`; hook `lint-touched` after each write | the diff to apply |

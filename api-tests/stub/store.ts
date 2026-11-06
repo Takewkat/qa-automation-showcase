@@ -1,7 +1,13 @@
 import { randomUUID } from "node:crypto";
 
-import { DEFAULT_FLAGS, cityOf, type Flags, type HistoryEntry, type Offer } from "./state-machine";
-import type { ListQuery } from "./validation";
+import {
+  DEFAULT_FLAGS,
+  cityOf,
+  type Flags,
+  type HistoryEntry,
+  type Offer,
+} from "./state-machine.ts";
+import type { ListQuery } from "./validation.ts";
 
 /** A company configuration as stored and returned. */
 export type Configuration = Flags & { companyId: string; updatedAt: string };

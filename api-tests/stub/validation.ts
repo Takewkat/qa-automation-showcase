@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ACTIONS, STATUSES, type Action } from "./state-machine";
+import { ACTIONS, STATUSES, type Action } from "./state-machine.ts";
 
 const SALARY_TYPES = ["HOURLY", "DAILY", "MONTHLY", "YEARLY"] as const;
 const BONUS_TYPES = ["SIGNING", "PERFORMANCE", "ANNUAL", "OTHER"] as const;
@@ -89,6 +89,13 @@ export const LIST_QUERY = z.object({
   createdBefore: z.iso.datetime({ offset: true }).optional(),
   sort: z.enum(SORTS).default("-createdAt"),
 });
+
+/** The list query as the schema reads it: `status` repeats, the other keys do not. */
+export const listQuery = (query: URLSearchParams) => {
+  const status = query.getAll("status");
+  const scalars = Object.fromEntries(Array.from(query.keys(), (key) => [key, query.get(key)]));
+  return LIST_QUERY.safeParse({ ...scalars, status: status.length ? status : undefined });
+};
 
 /** TransitionRequest; the reason is required for reject only. */
 export const transitionRequest = (action: Action) =>
