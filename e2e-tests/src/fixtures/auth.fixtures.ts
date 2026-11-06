@@ -37,14 +37,14 @@ export const authFixtures: Fixtures<
   apiUser: ({ baseURL }, use) => use(cachedUser(baseURL)),
   session: ({ request, apiUser }, use) => use({ request, token: apiUser.token }),
   anonymous: ({ request }, use) => use({ request }),
-  context: async ({ context }, use, info) => {
-    const report = await budget(context, info);
+  context: async ({ context, baseURL }, use, info) => {
+    const report = await budget(context, info, new URL(String(baseURL)).origin);
     await use(context);
     await report();
   },
-  authenticatedPage: async ({ browser }, use, info) => {
+  authenticatedPage: async ({ browser, baseURL }, use, info) => {
     const context = await browser.newContext({ storageState: AUTH_FILE });
-    const report = await budget(context, info);
+    const report = await budget(context, info, new URL(String(baseURL)).origin);
     await use(await context.newPage());
     await report();
     await context.close();
