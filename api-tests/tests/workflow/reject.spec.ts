@@ -12,7 +12,7 @@ const REASON = { reason: "Budget constraints", comment: "Revise the salary range
 
 test(
   "WFL-005 reject without a reason is refused and keeps TO_APPROVE",
-  { tag: ["@workflow", "@validation-error"] },
+  { tag: ["@workflow", "@validation-error", "@p2"] },
   async ({ company, offers }) => {
     const offer = await offers.createIn("TO_APPROVE");
     const error = await new TransitionJobOffer(company).transition<ErrorResponse>(
@@ -32,7 +32,7 @@ test(
 
 test(
   "WFL-005 reject is listed as needing a reason and with one returns to DRAFT, recorded",
-  { tag: ["@workflow", "@happy-path"] },
+  { tag: ["@workflow", "@happy-path", "@p2"] },
   async ({ company, offers }) => {
     const offer = await offers.createIn("TO_APPROVE");
     const { transitions } = await new GetAvailableTransitions(company).get(offer.id);

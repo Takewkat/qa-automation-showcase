@@ -8,7 +8,7 @@ const LOCKED = JOB_OFFER_STATUSES.filter((status) => !EDITABLE.includes(status))
 for (const status of EDITABLE) {
   test(
     `OFR-002 update in ${status} is allowed`,
-    { tag: ["@offers", "@happy-path"] },
+    { tag: ["@offers", "@happy-path", "@p1"] },
     async ({ company, offers }) => {
       const offer = await offers.createIn(status);
       const renamed = await new UpdateJobOffer(company).update(offer.id, { title: "Renamed" });
@@ -20,7 +20,7 @@ for (const status of EDITABLE) {
 for (const status of LOCKED) {
   test(
     `OFR-002 update in ${status} is refused and changes nothing`,
-    { tag: ["@offers", "@error-case"] },
+    { tag: ["@offers", "@error-case", "@p1"] },
     async ({ company, offers }) => {
       const offer = await offers.createIn(status);
       const error = await new UpdateJobOffer(company).update<ErrorResponse>(

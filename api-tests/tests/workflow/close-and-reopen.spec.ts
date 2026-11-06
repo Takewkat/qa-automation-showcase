@@ -3,7 +3,7 @@ import { expect, test } from "@job-offer/fixtures/fixtures";
 
 test(
   "WFL-007 close then reopen",
-  { tag: ["@workflow", "@happy-path"] },
+  { tag: ["@workflow", "@happy-path", "@p2"] },
   async ({ company, offers }) => {
     const offer = await offers.createIn("PUBLISHED");
     const transition = new TransitionJobOffer(company);

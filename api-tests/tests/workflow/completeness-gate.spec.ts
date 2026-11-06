@@ -5,7 +5,7 @@ import { incompleteOffer } from "@job-offer/test-data/job-offers";
 
 test(
   "WFL-003 submit of an incomplete offer is refused and stays in DRAFT",
-  { tag: ["@workflow", "@validation-error"] },
+  { tag: ["@workflow", "@validation-error", "@p1"] },
   async ({ company, offers }) => {
     const offer = await offers.create(incompleteOffer());
     expect(offer.isComplete).toBe(false);

@@ -1,38 +1,49 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 
-/** Ties docs/test-scenarios.md to tests/ by scenario ID and every test() to its folder, layer and tier tags. */
+/** Ties docs/test-scenarios.md to tests/ by scenario ID and every test() to its folder, layer, priority and tier tags. */
 const LAYERS = ["@happy-path", "@validation-error", "@error-case"];
+const PRIORITIES = ["@p1", "@p2", "@p3"];
 const TIERS = ["@smoke", "@sanity", "@regression", "@release-check"];
-/** The tag families a test() carries exactly one of, next to its folder tag: the layer in both parts, the tier in e2e-tests. */
+/** The tag families a test() carries exactly one of, next to its folder tag; the tier is e2e-tests only. */
 const PARTS = [
-  { part: "api-tests", families: [LAYERS] },
-  { part: "e2e-tests", families: [LAYERS, TIERS] },
+  { part: "api-tests", families: [LAYERS, PRIORITIES] },
+  { part: "e2e-tests", families: [LAYERS, PRIORITIES, TIERS] },
 ];
 const SCENARIO_ID = /^[A-Z]{3,4}-\d{3}$/;
+const PRIORITY = /^P[123]$/;
 /** A test() call: title, optional options object, then the function; tags come from the tag property. */
 const TEST_CALL =
   /\btest(?:\.(?:skip|fixme|only|fail))?\(\s*([`"'])(([A-Z]{3,4}-\d{3})(?:(?!\1).)*)\1\s*,\s*(?:(\{.*?\})\s*,\s*)?(?=async\b|function\b|\(|[\w$]+\s*\()/gs;
 const TAG_OPTION = /\btag:\s*(\[[^\]]*\]|["'`][^"'`]*["'`])/;
-const TAG = /@[a-z-]+/g;
+const TAG = /@[a-z0-9-]+/g;
 
 type Spec = { file: string; folder: string; id: string; title: string; tags: string[] };
 
-/** IDs of documented scenarios marked as implemented: the cell that is an ID, whatever its column; a trailing "no" cell means designed only. */
-function documentedIds(part: string): Set<string> {
+type Row = { id: string; priority?: string };
+
+/** A table line that names an implemented scenario: its ID cell and its Priority cell; a trailing "no" cell means designed only. */
+function rowOf(line: string): Row | undefined {
+  if (!line.startsWith("|")) return undefined;
+  const cells = line
+    .split("|")
+    .map((cell) => cell.trim())
+    .filter(Boolean);
+  const id = cells.find((cell) => SCENARIO_ID.test(cell));
+  if (!id || cells.at(-1)?.toLowerCase() === "no") return undefined;
+  return { id, priority: cells.find((cell) => PRIORITY.test(cell)) };
+}
+
+/** Documented scenarios, ID to Priority cell; a grid cell names the ID without one, the scenario row wins wherever it sits. */
+function documented(part: string): Map<string, string> {
   const file = join(part, "docs", "test-scenarios.md");
-  if (!existsSync(file)) return new Set();
-  const ids = new Set<string>();
+  const rows = new Map<string, string>();
+  if (!existsSync(file)) return rows;
   for (const line of readFileSync(file, "utf8").split("\n")) {
-    if (!line.startsWith("|")) continue;
-    const cells = line
-      .split("|")
-      .map((cell) => cell.trim())
-      .filter(Boolean);
-    const id = cells.find((cell) => SCENARIO_ID.test(cell));
-    if (id && cells.at(-1)?.toLowerCase() !== "no") ids.add(id);
+    const row = rowOf(line);
+    if (row) rows.set(row.id, row.priority ?? rows.get(row.id) ?? "none");
   }
-  return ids;
+  return rows;
 }
 
 /** The tags a test() options object declares. */
@@ -64,16 +75,26 @@ function tagFault(spec: Spec, families: string[][]): string | undefined {
   return `"${spec.title}" in ${spec.file} carries ${carried}; expected ${expected.slice(0, -1).join(", ")} and ${expected.at(-1)}`;
 }
 
+/** The fault of a priority tag that is not the Priority cell of the docs row: the row decides, the tag copies it. */
+function priorityFault(spec: Spec, rows: Map<string, string>): string | undefined {
+  const row = rows.get(spec.id);
+  const tag = spec.tags.find((tag) => PRIORITIES.includes(tag));
+  if (row === undefined || tag === undefined || tag === `@${row.toLowerCase()}`) return undefined;
+  const reason = row === "none" ? "its docs row has no Priority cell" : `docs say ${row}`;
+  return `"${spec.title}" in ${spec.file} carries ${tag}; ${reason}`;
+}
+
 const missing = (from: Set<string>, inSet: Set<string>) =>
   [...from].filter((id) => !inSet.has(id)).sort();
 
 let failures = 0;
 for (const { part, families } of PARTS) {
-  const docs = documentedIds(part);
+  const rows = documented(part);
+  const docs = new Set(rows.keys());
   const found = specs(part);
   const tests = new Set(found.map((spec) => spec.id));
   const faults = found
-    .map((spec) => tagFault(spec, families))
+    .map((spec) => tagFault(spec, families) ?? priorityFault(spec, rows))
     .filter((fault) => fault !== undefined);
   for (const id of missing(docs, tests))
     console.error(`${part}: ${id} is documented but has no test`);

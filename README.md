@@ -15,7 +15,7 @@ npm run verify                      # lint, format, types, both suites, traceabi
 npm run test:api                    # Part 1, TEST_ENV=local: the stub starts itself
 npm run test:e2e                    # Part 2, TEST_ENV=demo
 TEST_ENV=staging npm run test:api   # any row of config/environments.ts; production is refused
-npx playwright test -c api-tests --grep @error-case   # one layer, a feature (@workflow) or @smoke
+npx playwright test -c api-tests --grep @error-case   # a layer, a feature (@workflow) or a priority (@p1)
 npm run report:scenarios            # reports/scenarios.md: result per scenario ID, P1 gate
 ```
 
@@ -25,7 +25,7 @@ Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `
 
 | # | Practice | Where |
 |---|---|---|
-| 1 | Test design on two axes, feature by layer; a grid of every documented status per operation | `api-tests/docs/test-scenarios.md`, ADR 0006 |
+| 1 | Test design on three axes as tags: feature, layer, priority; a grid of every documented status per operation; each priority level defined by what a failure costs | `api-tests/docs/test-scenarios.md`, ADR 0006 |
 | 2 | OpenAPI as the contract: every response validated, types generated | `shared/api/contract.ts`, ADR 0005 |
 | 3 | One class per endpoint over a generic base, the base shared by both parts | `shared/api/api.ts`, `api-tests/src/api/`, ADR 0004 |
 | 4 | An oracle independent of the system under test, lint-enforced | `api-tests/src/oracle.ts`, ADR 0002 |
@@ -33,7 +33,7 @@ Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `
 | 6 | Table-driven matrices: flag combinations, invalid transitions, every operation without a header | `api-tests/tests/` |
 | 7 | Named environments with production refused; one reporter set, reports keyed by scenario ID with a P1 gate | `config/`, `scripts/scenario-report.mts` |
 | 8 | Selectors -> pages -> fixtures -> specs, import direction enforced; shared-demo discipline | `e2e-tests/src/`, ADR 0003 |
-| 9 | Docs tied to tests by scenario ID and by tag (folder, layer, tier), both directions | `scripts/check-traceability.mts` |
+| 9 | Docs tied to tests by scenario ID and by tag (folder, layer, priority, tier), both directions | `scripts/check-traceability.mts` |
 | 10 | Agent-ready: one rule source, machine-enforced, executable recipes | `AGENTS.md`, `.claude/` |
 
 Not used, on purpose: a Gherkin layer (no non-technical reader; IDs and page-object methods keep specs readable), a shared World or global cleanup list (fixtures own their data), sleeps (assertions retry), assertions on global lists of the shared demo, a mock replaying examples (Prism: transitions and tenancy would be untestable).

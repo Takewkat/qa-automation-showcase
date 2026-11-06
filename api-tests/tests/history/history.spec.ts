@@ -6,7 +6,7 @@ const ACTIONS = ["submit", "finalize", "approve", "post", "close"] as const;
 
 test(
   "HIS-001 history is empty at creation and follows every transition in order",
-  { tag: ["@history", "@happy-path"] },
+  { tag: ["@history", "@happy-path", "@p2"] },
   async ({ company, configure, offers }) => {
     await configure(ALL_FLAGS);
     const offer = await offers.create();

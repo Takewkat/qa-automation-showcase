@@ -5,7 +5,7 @@
   "description": "Job Offer Microservice API tests: Playwright request, OpenAPI contract checks, reference stub on node:http",
   "scripts": {
     "test": "playwright test",
-    "test:smoke": "playwright test --grep @smoke",
+    "test:p1": "playwright test --grep @p1",
     "test:ui": "playwright test --ui",
     "stub": "node stub/server.ts",
     "gen:types": "openapi-typescript spec/job-offer-swagger.yml -o src/generated/schema.d.ts",

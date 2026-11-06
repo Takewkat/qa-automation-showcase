@@ -5,7 +5,7 @@ import { WITHDRAWABLE } from "@job-offer/oracle";
 for (const status of WITHDRAWABLE) {
   test(
     `WFL-006 withdraw from ${status} returns to DRAFT and reopens editing`,
-    { tag: ["@workflow", "@happy-path"] },
+    { tag: ["@workflow", "@happy-path", "@p2"] },
     async ({ company, offers }) => {
       const offer = await offers.createIn(status);
       const withdrawn = await new TransitionJobOffer(company).transition(offer.id, "withdraw");

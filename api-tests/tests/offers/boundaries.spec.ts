@@ -13,7 +13,7 @@ const ACCEPTED = [
 for (const row of ACCEPTED) {
   test(
     `VAL-003 ${row.name} is accepted`,
-    { tag: ["@offers", "@happy-path"] },
+    { tag: ["@offers", "@happy-path", "@p3"] },
     async ({ offers }) => {
       const offer = await offers.create(row.body);
       expect(offer).toMatchObject({

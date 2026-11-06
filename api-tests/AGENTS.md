@@ -19,13 +19,13 @@ Rules: the table in the root `AGENTS.md`. Below: the paths, the checklist, the e
 | `src/fixtures/` | `company`, `otherCompany`, `anonymous`, `malformedHeader`, `offers`, `otherOffers`, `configure`; `offers.factory.ts`; `fixtures.ts` exports `test` |
 | `stub/` | a means to run the suite, not a deliverable. `http/` the adapter (`router.ts`, `request.ts` parsing and guards, `errors.ts` the spec's error bodies, `app.ts` the routes), `domain/` the rules (`state-machine.ts`, `schemas.ts` the request shapes), `store/memory.ts`; `server.ts` starts it. `domain/` imports nothing of the other two, `store/` nothing of `http/` |
 | `tests/<group>/*.spec.ts`, `tests/_template/` | one folder per business area, its name is the feature tag; the file to copy. Model: `tests/workflow/` |
-| `docs/test-scenarios.md` | the grid (operation by layer), the scenario tables, rationale, assumptions |
+| `docs/test-scenarios.md` | the grid (operation by layer), the priority levels, the scenario tables, rationale, assumptions |
 
 ## Add a scenario (bottom up; in brackets, the error when a step is skipped)
 
-1. Row in `docs/test-scenarios.md`, next ID of its group, and the ID in its grid cell [`test XXX-000 is not in docs/test-scenarios.md`].
+1. Row in `docs/test-scenarios.md`, next ID of its group, its Priority from the levels table, and the ID in its grid cell [`test XXX-000 is not in docs/test-scenarios.md`].
 2. New payload: a builder in `src/test-data/job-offers.ts`; new random value: a generator in `factories.ts`. New precondition state: `offers.createIn(status, body?, flags?)`. New endpoint: one class in `src/api/<resource>/`, one export line.
-3. `test()` in the topic file that shares the precondition, or a new file from `tests/_template/`. Title `XXX-000 <scenario>`, tags `{ tag: ["@<folder>", "@<layer>"] }` on the `test()` call; calls through endpoint classes with `company`; a negative case passes the expected status last and names the error type [`A test title starts with its scenario ID`, `carries ...; expected @<folder> and one of ...`].
+3. `test()` in the topic file that shares the precondition, or a new file from `tests/_template/`. Title `XXX-000 <scenario>`, tags `{ tag: ["@<folder>", "@<layer>", "@<priority>"] }` on the `test()` call, the priority tag a copy of the row; calls through endpoint classes with `company`; a negative case passes the expected status last and names the error type [`A test title starts with its scenario ID`, `carries ...; expected @<folder>, one of ... and one of @p1, @p2, @p3`, `carries @p2; docs say P1`].
 4. A matrix is a `const ROWS` table and one `test()` per row [`max-lines`].
 5. `npx playwright test -c api-tests -g XXX-000`, then `npm run traceability`; `/verify` is the done gate.
 
@@ -36,6 +36,7 @@ Rules: the table in the root `AGENTS.md`. Below: the paths, the checklist, the e
 | `no schema for 500 on POST /job-offers` | the expected, and received, status is not documented for that operation | assert a documented status; if the spec is wrong, say so in `docs/test-scenarios.md` |
 | `POST /job-offers: expected 201, received 422 {...}` | payload fails validation | read `fieldErrors`; fix the builder, not the assertion |
 | `the oracle stays independent` | a spec or `src/` imports `stub/` | put the expected value in `src/oracle.ts` |
-| `"OFR-001 ..." carries @offers; expected @offers and one of ...` | no layer tag, two, or not the folder's tag | one layer per test; two things proved is two tests under one ID |
+| `"OFR-001 ..." carries @offers; expected @offers, one of ... and one of @p1, @p2, @p3` | no layer or priority tag, two, or not the folder's tag | one layer and one priority per test; two things proved is two tests under one ID |
+| `"TEN-005 ..." carries @p2; docs say P1` | the priority tag and the docs row disagree | the row decides; copy its Priority cell to the tag |
 | `webServer` timeout | port 8080 busy (`lsof -i :8080`) or the stub crashed | `npm run stub` alone shows the error; outside CI a running stub is reused, old code included |
 | `Test has unknown parameter "offers"` | `test` imported from `@playwright/test` | import from `@job-offer/fixtures/fixtures` |

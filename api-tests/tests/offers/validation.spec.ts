@@ -43,7 +43,7 @@ const REJECTED: { name: string; body: Body; field: string }[] = [
 for (const row of REJECTED) {
   test(
     `VAL-001 ${row.name} is refused and names the field`,
-    { tag: ["@offers", "@validation-error"] },
+    { tag: ["@offers", "@validation-error", "@p2"] },
     async ({ company }) => {
       const error = await new CreateJobOffer(company).create<ValidationError>(row.body, 422);
       expect(error.code).toBe(ERROR_CODES.validation);

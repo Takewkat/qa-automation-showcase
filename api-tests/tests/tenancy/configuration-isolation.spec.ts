@@ -19,7 +19,7 @@ const AS_OTHER: { name: string; call: (other: Company, companyId: string) => Pro
 for (const row of AS_OTHER) {
   test(
     `TEN-005 ${row.name} of another company's configuration is forbidden`,
-    { tag: ["@tenancy", "@error-case"] },
+    { tag: ["@tenancy", "@error-case", "@p1"] },
     async ({ company, otherCompany }) => {
       await row.call(otherCompany, company.id);
       const untouched = await new GetCompanyConfiguration(company).get();

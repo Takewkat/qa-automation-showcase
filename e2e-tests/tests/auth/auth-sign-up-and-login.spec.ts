@@ -4,7 +4,7 @@ import { uniqueUser } from "@e2e/test-data/factories";
 /** The one UI-driven session, on a clean browser; on the demo it spends 2 of the 5 register or login calls per hour per IP. */
 test(
   "AUTH-001 I can sign up, log out and log in again",
-  { tag: ["@auth", "@happy-path", "@sanity"] },
+  { tag: ["@auth", "@happy-path", "@p1", "@sanity"] },
   async ({ authPage, navbar }) => {
     const user = uniqueUser();
     await authPage.openSignUp();

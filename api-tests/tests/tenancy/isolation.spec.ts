@@ -27,7 +27,7 @@ const AS_OTHER: { name: string; call: (other: Company, id: string) => Promise<un
 for (const row of AS_OTHER) {
   test(
     `TEN-003 ${row.name} of another company's offer is not found and has no effect`,
-    { tag: ["@tenancy", "@error-case"] },
+    { tag: ["@tenancy", "@error-case", "@p1"] },
     async ({ company, offers, otherCompany }) => {
       const offer = await offers.create();
       await row.call(otherCompany, offer.id);

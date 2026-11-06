@@ -11,7 +11,7 @@ import { INVALID_TRANSITIONS, VALID_ACTIONS } from "@job-offer/oracle";
 for (const { status, action } of INVALID_TRANSITIONS) {
   test(
     `WFL-002 ${action} from ${status} is refused without side effect`,
-    { tag: ["@workflow", "@error-case"] },
+    { tag: ["@workflow", "@error-case", "@p1"] },
     async ({ company, offers }) => {
       const offer = await offers.createIn(status);
       const historyBefore = await new GetJobOfferHistory(company).get(offer.id);

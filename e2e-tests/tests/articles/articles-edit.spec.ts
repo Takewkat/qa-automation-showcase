@@ -3,7 +3,7 @@ import { articleDraft } from "@e2e/test-data/factories";
 
 test(
   "ART-002 I can edit my article and see the new title and body",
-  { tag: ["@articles", "@happy-path", "@sanity"] },
+  { tag: ["@articles", "@happy-path", "@p1", "@sanity"] },
   async ({ articles, editorPage, articlePage, track }) => {
     const { slug } = await articles.seed();
     const edited = articleDraft();

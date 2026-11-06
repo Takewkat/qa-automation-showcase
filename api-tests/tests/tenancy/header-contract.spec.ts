@@ -38,7 +38,7 @@ const OPERATIONS: Record<string, (caller: Company, ids: Ids) => Promise<unknown>
 for (const [name, call] of Object.entries(OPERATIONS)) {
   test(
     `TEN-001 ${name} without a header is unauthorized`,
-    { tag: ["@tenancy", "@error-case"] },
+    { tag: ["@tenancy", "@error-case", "@p1"] },
     async ({ anonymous }) => {
       await call(anonymous, { offer: generateJobOfferId(), company: generateCompanyId() });
     },
@@ -47,7 +47,7 @@ for (const [name, call] of Object.entries(OPERATIONS)) {
 
 test(
   "TEN-001 a header that is not a UUID is a bad request",
-  { tag: ["@tenancy", "@validation-error"] },
+  { tag: ["@tenancy", "@validation-error", "@p1"] },
   async ({ malformedHeader }) => {
     await new ListJobOffers(malformedHeader).list({}, 400);
   },

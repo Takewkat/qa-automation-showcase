@@ -3,7 +3,7 @@ import { articleDraft } from "@e2e/test-data/factories";
 
 test(
   "ART-001 I can publish an article and read it by its title",
-  { tag: ["@articles", "@happy-path", "@smoke"] },
+  { tag: ["@articles", "@happy-path", "@p1", "@smoke"] },
   async ({ apiUser, editorPage, articlePage, profilePage, track }) => {
     const draft = articleDraft();
     await editorPage.openNew();

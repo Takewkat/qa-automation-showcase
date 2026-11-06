@@ -3,7 +3,7 @@ import { expect, test } from "@job-offer/fixtures/fixtures";
 
 test(
   "TEN-004 lists are scoped to the caller's company",
-  { tag: ["@tenancy", "@happy-path", "@smoke"] },
+  { tag: ["@tenancy", "@happy-path", "@p1"] },
   async ({ company, offers, otherCompany, otherOffers }) => {
     const first = await offers.create();
     const second = await offers.create();

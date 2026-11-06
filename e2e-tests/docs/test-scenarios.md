@@ -1,17 +1,17 @@
 # Part 2: Conduit E2E, test scenarios
 
-12 scenarios, 6 implemented; an implemented ID is a `test()` title under `tests/`, tied both ways by `npm run traceability`. One scenario is one user action told as "I can ...", its precondition seeded through the API. P1 critical, P2 important, P3 cheap and useful. In the grid, italics mark a scenario designed and not written (its row ends with `no`).
+12 scenarios, 6 implemented; an implemented ID is a `test()` title under `tests/`, tied both ways by `npm run traceability`. One scenario is one user action told as "I can ...", its precondition seeded through the API. Priority is a tag equal to the row, as in Part 1: P1 the user cannot do what the product is for, P2 a daily action blocked or a message missing, P3 an entry point; a P1 that does not pass fails `npm run verify`. In the grid, italics mark a scenario designed and not written (its row ends with `no`).
 
 ## Design: tier by domain
 
-Every E2E `test()` carries three tags, checked by `npm run traceability`: its domain, the folder of the file (`@auth`, `@articles`, `@comments`, `@social`, `@navigation`); one layer as in Part 1 (`@happy-path`, `@validation-error`, `@error-case`); one tier, the process that runs it:
+Every E2E `test()` carries four tags, checked by `npm run traceability`: its domain, the folder of the file (`@auth`, `@articles`, `@comments`, `@social`, `@navigation`); one layer as in Part 1 (`@happy-path`, `@validation-error`, `@error-case`); one priority (`@p1`, `@p2`, `@p3`); one tier, the process that runs it:
 
 - `@smoke`: proves the product works, the first run after a deploy;
 - `@sanity`: an action a user takes every day, the daily run;
 - `@regression`: a fixed bug, one row per bug, added when the bug is closed;
 - `@release-check`: an entry point, cheap, run before a release.
 
-`npx playwright test -c e2e-tests --grep @sanity` runs a tier, `tests/articles` a domain.
+`npx playwright test -c e2e-tests --grep @sanity` runs a tier, `--grep @p1` the critical set, `tests/articles` a domain.
 
 | Tier | auth | articles | comments | social | navigation |
 |---|---|---|---|---|---|

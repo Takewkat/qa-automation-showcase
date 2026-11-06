@@ -7,7 +7,7 @@ const KEPT = JOB_OFFER_STATUSES.filter((status) => !DELETABLE.includes(status));
 
 test(
   "OFR-003 delete in DRAFT removes the offer",
-  { tag: ["@offers", "@happy-path", "@smoke"] },
+  { tag: ["@offers", "@happy-path", "@p1"] },
   async ({ company, offers }) => {
     const offer = await offers.create();
     await new DeleteJobOffer(company).delete(offer.id);
@@ -18,7 +18,7 @@ test(
 for (const status of KEPT) {
   test(
     `OFR-003 delete in ${status} is refused and keeps the offer`,
-    { tag: ["@offers", "@error-case"] },
+    { tag: ["@offers", "@error-case", "@p1"] },
     async ({ company, offers }) => {
       const offer = await offers.createIn(status);
       const error = await new DeleteJobOffer(company).delete<ErrorResponse>(offer.id, 409);

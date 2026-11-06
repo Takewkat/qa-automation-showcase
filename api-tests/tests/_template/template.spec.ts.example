@@ -8,10 +8,10 @@ const ROWS = [
   { name: "a 201-char title", title: "a".repeat(201) },
 ];
 
-/** Tags: the folder of the file, then one layer of @happy-path, @validation-error, @error-case. */
+/** Tags: the folder, one layer (@happy-path, @validation-error, @error-case), the priority of the docs row. */
 test(
   "XXX-000 creates a complete offer and reads it back",
-  { tag: ["@offers", "@happy-path"] },
+  { tag: ["@offers", "@happy-path", "@p1"] },
   async ({ company, offers }) => {
     const created = await offers.create();
     const fetched = await new GetJobOffer(company).get(created.id);
@@ -20,7 +20,11 @@ test(
 );
 
 for (const row of ROWS) {
-  test(`XXX-001 ${row.name} is refused`, { tag: ["@offers", "@validation-error"] }, async ({ company }) => {
-    await new CreateJobOffer(company).create(completeOffer({ title: row.title }), 422);
-  });
+  test(
+    `XXX-001 ${row.name} is refused`,
+    { tag: ["@offers", "@validation-error", "@p2"] },
+    async ({ company }) => {
+      await new CreateJobOffer(company).create(completeOffer({ title: row.title }), 422);
+    },
+  );
 }

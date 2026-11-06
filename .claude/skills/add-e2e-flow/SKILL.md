@@ -11,7 +11,7 @@ Follow `e2e-tests/AGENTS.md`, "Add a flow", bottom up; stop at the first failure
 2. Selectors `src/selectors/<page>.selectors.ts` from the template, after one look at the screens (`npx playwright codegen https://conduit-realworld-example-app.fly.dev` or `$WEB_BASE_URL`). Reuse the file when the page exists.
 3. Page object `src/pages/<page>.page.ts` from the template: one `test.step()` per method, `assert*` for checks.
 4. Fixture: the page object in `src/fixtures/<domain>.fixtures.ts` on `authenticatedPage` (on `page` only for a flow that starts logged out, as `authPage` and `navbar`), chained in `src/fixtures/test.ts`.
-5. Row in `e2e-tests/docs/test-scenarios.md`, next ID of the domain, its `Tier`, `Impl = yes`.
-6. Spec `tests/<domain>/<domain>-<flow>.spec.ts` from the template: title `"<ID> <flow>"`, tags `{ tag: ["@<domain>", "@<layer>", "@<tier>"] }`, data from `src/test-data/factories.ts`, `track(title)` after a UI create.
+5. Row in `e2e-tests/docs/test-scenarios.md`, next ID of the domain, its `Priority`, its `Tier`, `Impl = yes`.
+6. Spec `tests/<domain>/<domain>-<flow>.spec.ts` from the template: title `"<ID> <flow>"`, tags `{ tag: ["@<domain>", "@<layer>", "@<priority>", "@<tier>"] }`, data from `src/test-data/factories.ts`, `track(title)` after a UI create.
 7. `npx playwright test -c e2e-tests tests/<domain>`, then `npm run traceability`.
 8. Report: files touched, the Playwright result line, the `e2e-tests:` traceability line.

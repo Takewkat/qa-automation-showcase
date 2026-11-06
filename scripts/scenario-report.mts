@@ -1,31 +1,19 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-/** Joins results.json with the scenario table: one line per ID, totals per priority, a P1 gate. */
+/** Reads results.json per part: one line per scenario ID with the priority its tag carries, totals per priority, a P1 gate. */
 const PARTS = [
   { part: "api-tests", report: "api" },
   { part: "e2e-tests", report: "e2e" },
 ];
-const DOC_ROW = /^\|\s*([A-Z]{3,4}-\d{3})\b/;
-const PRIORITY = /^P[123]$/;
 const ID_PREFIX = /^([A-Z]{3,4}-\d{3})\b/;
+/** The reporter writes tags without their @. */
+const PRIORITY_TAG = /^p[123]$/;
 const WORST = ["unexpected", "flaky", "skipped", "expected"];
 
-type Suite = { specs?: { title: string; tests: { status: string }[] }[]; suites?: Suite[] };
-
-/** Scenario ID to priority from the docs table. */
-function priorities(part: string): Map<string, string> {
-  const file = join(part, "docs", "test-scenarios.md");
-  const map = new Map<string, string>();
-  if (!existsSync(file)) return map;
-  for (const line of readFileSync(file, "utf8").split("\n")) {
-    const match = DOC_ROW.exec(line);
-    const cells = line.split("|").map((cell) => cell.trim());
-    const priority = cells.find((cell) => PRIORITY.test(cell));
-    if (match && priority) map.set(match[1], priority);
-  }
-  return map;
-}
+type SpecResult = { title: string; tags: string[]; tests: { status: string }[] };
+type Suite = { specs?: SpecResult[]; suites?: Suite[] };
+type Scenario = { priority: string; status: string };
 
 /** The worst of the statuses given, in WORST order; an undefined entry is a scenario not seen yet. */
 function worst(statuses: (string | undefined)[]): string {
@@ -34,16 +22,25 @@ function worst(statuses: (string | undefined)[]): string {
     .sort((a, b) => WORST.indexOf(a) - WORST.indexOf(b))[0];
 }
 
-/** Worst status per scenario ID across every spec that carries it and ran at least once. */
-function results(report: string): Map<string, string> {
+/** The scenario after one more of its specs: the priority tag the spec carries, the worst status so far. */
+function merge(seen: Scenario | undefined, spec: SpecResult): Scenario {
+  const tag = spec.tags.find((candidate) => PRIORITY_TAG.test(candidate));
+  return {
+    priority: tag?.toUpperCase() ?? seen?.priority ?? "?",
+    status: worst([seen?.status, ...spec.tests.map((t) => t.status)]),
+  };
+}
+
+/** Per scenario ID: its priority and the worst status across every spec that carries it and ran at least once. */
+function results(report: string): Map<string, Scenario> {
   const file = join("reports", report, "results.json");
-  const map = new Map<string, string>();
+  const map = new Map<string, Scenario>();
   if (!existsSync(file)) return map;
   const walk = (suite: Suite): void => {
     for (const spec of suite.specs ?? []) {
       const id = ID_PREFIX.exec(spec.title)?.[1];
       if (!id || spec.tests.length === 0) continue;
-      map.set(id, worst([map.get(id), ...spec.tests.map((t) => t.status)]));
+      map.set(id, merge(map.get(id), spec));
     }
     (suite.suites ?? []).forEach(walk);
   };
@@ -54,13 +51,11 @@ function results(report: string): Map<string, string> {
 const lines: string[] = [];
 let p1Failures = 0;
 for (const { part, report } of PARTS) {
-  const docs = priorities(part);
   const run = results(report);
   if (run.size === 0) continue;
   lines.push(`## ${part}`, "", "| ID | Priority | Result |", "|---|---|---|");
   const totals = new Map<string, { passed: number; total: number }>();
-  for (const [id, status] of [...run].sort()) {
-    const priority = docs.get(id) ?? "?";
+  for (const [id, { priority, status }] of [...run].sort(([a], [b]) => a.localeCompare(b))) {
     const bucket = totals.get(priority) ?? { passed: 0, total: 0 };
     bucket.total += 1;
     if (status === "expected") bucket.passed += 1;

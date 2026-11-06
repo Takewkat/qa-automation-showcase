@@ -11,7 +11,7 @@ import { malformed } from "@job-offer/test-data/job-offers";
 
 test(
   "CFG-001 a fresh company has every flag off; an update is echoed and read back",
-  { tag: ["@configuration", "@happy-path"] },
+  { tag: ["@configuration", "@happy-path", "@p2"] },
   async ({ company }) => {
     const configuration = new GetCompanyConfiguration(company);
     const defaults = await configuration.get();
@@ -26,7 +26,7 @@ test(
 
 test(
   "CFG-002 flags are snapshotted on the offer at creation",
-  { tag: ["@configuration", "@happy-path", "@smoke"] },
+  { tag: ["@configuration", "@happy-path", "@p1"] },
   async ({ company, configure, offers }) => {
     const before = await offers.create();
     await configure({ approvalRequired: true });
@@ -41,7 +41,7 @@ test(
 
 test(
   "CFG-003 a flag that is not a boolean is a bad request and changes nothing",
-  { tag: ["@configuration", "@validation-error"] },
+  { tag: ["@configuration", "@validation-error", "@p3"] },
   async ({ company }) => {
     const body = malformed<UpdateCompanyConfigurationRequest>({ approvalRequired: "yes" });
     await new UpdateCompanyConfiguration(company).update<ErrorResponse>(body, company.id, 400);

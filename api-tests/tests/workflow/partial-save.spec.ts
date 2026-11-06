@@ -10,7 +10,7 @@ import { compensation, incompleteOffer } from "@job-offer/test-data/job-offers";
 
 test(
   "WFL-004 finalize of an incomplete offer is refused and stays in TO_FINALIZE",
-  { tag: ["@workflow", "@validation-error"] },
+  { tag: ["@workflow", "@validation-error", "@p1"] },
   async ({ company, offers }) => {
     const offer = await offers.createIn("TO_FINALIZE", incompleteOffer());
     expect(offer.isComplete).toBe(false);
@@ -28,7 +28,7 @@ test(
 
 test(
   "WFL-004 partial save: an offer completed in TO_FINALIZE is published by finalize",
-  { tag: ["@workflow", "@happy-path"] },
+  { tag: ["@workflow", "@happy-path", "@p1"] },
   async ({ company, offers }) => {
     const offer = await offers.createIn("TO_FINALIZE", incompleteOffer());
     const completed = await new UpdateJobOffer(company).update(offer.id, {

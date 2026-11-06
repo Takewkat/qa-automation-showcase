@@ -3,8 +3,6 @@ import { expect, type Fixtures, test } from "@job-offer/fixtures/fixtures";
 import { HAPPY_PATHS, VALID_ACTIONS, flagsOf, forward } from "@job-offer/oracle";
 
 type Row = (typeof HAPPY_PATHS)[number];
-const SMOKE = HAPPY_PATHS.filter((row) => row.on.length === 0);
-const OPTIONAL = HAPPY_PATHS.filter((row) => row.on.length > 0);
 const label = (row: Row) => `${row.path.join(" -> ")} with ${row.on.join(" and ") || "no flag"}`;
 
 /** Walks the oracle's chain with the forward action of each status, then closes. */
@@ -25,7 +23,5 @@ const publishes =
     expect(offer.closedAt).not.toBeNull();
   };
 
-for (const row of SMOKE)
-  test(`WFL-001 ${label(row)}`, { tag: ["@workflow", "@happy-path", "@smoke"] }, publishes(row));
-for (const row of OPTIONAL)
-  test(`WFL-001 ${label(row)}`, { tag: ["@workflow", "@happy-path"] }, publishes(row));
+for (const row of HAPPY_PATHS)
+  test(`WFL-001 ${label(row)}`, { tag: ["@workflow", "@happy-path", "@p1"] }, publishes(row));

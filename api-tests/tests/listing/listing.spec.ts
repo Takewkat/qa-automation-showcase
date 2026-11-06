@@ -21,7 +21,7 @@ const INVALID: Query[] = [
 
 test(
   "LST-001 the default page lists newest first and a page size paginates to the last empty page",
-  { tag: ["@listing", "@happy-path"] },
+  { tag: ["@listing", "@happy-path", "@p2"] },
   async ({ company, offers }) => {
     const ids: string[] = [];
     for (let n = 0; n < TOTAL; n += 1) {
@@ -44,7 +44,7 @@ test(
 for (const query of INVALID) {
   test(
     `LST-002 ${JSON.stringify(query)} is a bad request`,
-    { tag: ["@listing", "@validation-error"] },
+    { tag: ["@listing", "@validation-error", "@p3"] },
     async ({ company }) => {
       await new ListJobOffers(company).list(query, 400);
     },

@@ -25,7 +25,7 @@ const REJECTED: { name: string; body: Body; field: string }[] = [
 for (const row of REJECTED) {
   test(
     `VAL-002 ${row.name} is refused on update and changes nothing`,
-    { tag: ["@offers", "@validation-error"] },
+    { tag: ["@offers", "@validation-error", "@p2"] },
     async ({ company, offers }) => {
       const offer = await offers.create();
       const error = await new UpdateJobOffer(company).update<ValidationError>(

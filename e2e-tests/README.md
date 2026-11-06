@@ -11,7 +11,7 @@ Six user flows on the Conduit RealWorld demo (`docs/test-scenarios.md`): Playwri
 | `WEB_BASE_URL=https://host npm test` | an ad-hoc target |
 | `BROWSERS=chromium,firefox,webkit npm test` | more browsers (`npx playwright install` first) |
 | `npx playwright test -c e2e-tests tests/articles` | one domain |
-| `npx playwright test -c e2e-tests --grep @smoke` | one tier: `@smoke`, `@sanity`, `@regression`, `@release-check` |
+| `npx playwright test -c e2e-tests --grep @smoke` | one tier: `@smoke`, `@sanity`, `@regression`, `@release-check`; `--grep @p1` the critical set |
 | `npm run test:ui`, `npm run report` | the UI mode; the HTML report under `reports/e2e/` |
 
 ## Structure
@@ -21,14 +21,14 @@ Six user flows on the Conduit RealWorld demo (`docs/test-scenarios.md`): Playwri
 | selectors | `src/selectors/<page>.selectors.ts` | `<PAGE>_SELECTORS as const`, a group per component, functions for dynamic ones, no logic |
 | pages | `src/pages/<page>.page.ts` | one class per screen over `BasePage`, every method a `test.step`, checks named `assert...` |
 | fixtures | `src/fixtures/<domain>.fixtures.ts`, `test.ts` | page objects and data of one domain, chained into the `test` every spec imports |
-| specs | `tests/<domain>/<domain>-<flow>.spec.ts` | one flow each, titled `XXX-000 I can ...`, tagged domain, layer, tier; fixtures and factories only |
+| specs | `tests/<domain>/<domain>-<flow>.spec.ts` | one flow each, titled `XXX-000 I can ...`, tagged domain, layer, priority, tier; fixtures and factories only |
 | api | `src/api/` | one class per Conduit endpoint, for seeding and cleanup, never for assertions |
 | setup | `src/setup/auth.setup.ts` | the project that registers the run's user once and caches its session per environment |
 | test data | `src/test-data/factories.ts` | `uniqueUser()`, `articleDraft()`, `commentText()`, every value carrying the run id |
 
 ## The demo and its limits
 
-The demo is shared and limits every IP: 5 register or login calls per hour, about 100 requests per 15 minutes. A blank page under the navbar after Sign up or Login is a 429, not a selector problem: wait for the window, or switch to the local target. One run spends about 75 requests and 2 auth calls (AUTH-001); a cold cache adds one register, a CI retry of AUTH-001 two more, which is the whole hour. Never loop a run, `--repeat-each` or retry a failure on the demo by hand; iterate locally.
+The demo is shared and limits every IP: 5 register or login calls per hour, about 100 requests per 15 minutes. A blank page under the navbar after Sign up or Login is a 429, not a selector problem: wait for the window, or switch to the local target. One run spends about 75 requests and 2 auth calls (AUTH-001); a cold cache adds one register, a CI retry of AUTH-001 two more, which is the whole hour. Never loop a run, `--repeat-each` or retry a failure on the demo by hand; iterate locally. Every browser context is budgeted (`src/utils/requests.ts`): the document and the bundles are fetched once per worker and served from memory, icons, manifest and the tag cloud never leave the browser, and the report attaches `server requests` to each test (`api N, app N`, then one line per request) with a 429 as a `rate-limited` annotation. No retry on the demo, whatever `CI` says.
 
 ## Local Conduit, step by step
 
