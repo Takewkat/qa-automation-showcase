@@ -30,9 +30,16 @@ Six user flows on the Conduit RealWorld demo (`docs/test-scenarios.md`): Playwri
 
 The demo is shared and limits every IP: 5 register or login calls per hour, about 100 requests per 15 minutes. A blank page under the navbar after Sign up or Login is a 429, not a selector problem: wait for the window, or switch to the local target. One run spends about 75 requests and 2 auth calls (AUTH-001); a cold cache adds one register, a CI retry of AUTH-001 two more, which is the whole hour. Never loop a run, `--repeat-each` or retry a failure on the demo by hand; iterate locally. Every browser context is budgeted (`src/utils/requests.ts`): the document and the bundles are fetched once per worker and served from memory, icons, manifest and the tag cloud never leave the browser, and the report attaches `server requests` to each test (`api N, app N`, then one line per request) with a 429 as a `rate-limited` annotation. No retry on the demo, whatever `CI` says.
 
-## Local Conduit, step by step
+## Local Conduit, one command
 
-The upstream app has no limiter. Postgres in Docker, the app from source, the backend creates its schema at start.
+The upstream app has no limiter. From the root, with Docker running:
+
+```
+npm run conduit:local                # terminal 1: Postgres in Docker, the app from source, on http://localhost:3000
+npm run test:local:ui                # terminal 2, from e2e-tests/: UI mode on it (npm run test:e2e:local from the root)
+```
+
+`npm run conduit:local -- --prepare` does everything but the start, to warm up before a demo. The script (`scripts/conduit-local.sh`) reuses the `conduit-pg` container, the checkout in `~/.cache/qa-automation-showcase/conduit` and its `node_modules` on every call; `CONDUIT_DIR` moves the checkout. What it does, by hand:
 
 1. `docker run -d --name conduit-pg -e POSTGRES_USER=conduit -e POSTGRES_PASSWORD=conduit -e POSTGRES_DB=conduit -p 5432:5432 postgres:16-alpine`
 2. `git clone https://github.com/TonyMckes/conduit-realworld-example-app.git && cd conduit-realworld-example-app`

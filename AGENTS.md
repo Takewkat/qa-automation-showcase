@@ -7,7 +7,7 @@ Read this first, then `api-tests/AGENTS.md` or `e2e-tests/AGENTS.md`. Every rule
 - `api-tests/` Part 1: Job Offer API tests, Playwright `request` + TypeScript. Target: the reference stub, or a deployment through `TEST_ENV` / `API_BASE_URL`.
 - `e2e-tests/` Part 2: Conduit E2E flows, live demo by default.
 - `shared/` what both parts extend: `api/` the endpoint base and the contract check, `cleanup/` the leftovers report. Imports no part.
-- `config/` the environments table and the reporter set. `scripts/` `verify.sh` the "done" gate, `check-traceability.mts` docs <-> tests by ID and tags, `scenario-report.mts` results per scenario.
+- `config/` the environments table and the reporter set. `scripts/` `verify.sh` the "done" gate, `conduit-local.sh` a local Conduit for Part 2, `check-traceability.mts` docs <-> tests by ID and tags, `scenario-report.mts` results per scenario.
 - `docs/decisions/` why. `HOMEWORK.md` and `api-tests/spec/` are inputs, never edited.
 
 ## Commands
