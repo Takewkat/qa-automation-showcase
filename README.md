@@ -15,7 +15,7 @@ npm run verify                      # lint, format, types, both suites, traceabi
 npm run test:api                    # Part 1, TEST_ENV=local: the stub starts itself
 npm run test:e2e                    # Part 2, TEST_ENV=demo: once per 15 minutes, see below
 npm run test:<part>:<env>           # api: local, staging; e2e: demo, local. Inside a part: test:<env>:run, test:<env>:ui
-npm run conduit:local               # a local Conduit for Part 2 in one command (Docker), then npm run test:e2e:local
+npm run conduit:local               # a local Conduit for Part 2: docker compose up --build, then npm run test:e2e:local
 npx playwright test -c api-tests --grep @error-case   # a layer, a feature (@workflow) or a priority (@p1); -c e2e-tests also a tier (@smoke)
 npm run report:scenarios            # reports/scenarios.md: result per scenario ID, P1 gate
 ```
@@ -53,4 +53,3 @@ Planned and written with Claude Code, every file read before it was kept. The au
 - A CI gate on `scripts/verify.sh`: the API part on every push, the E2E part on a manual trigger, since the demo's budget forbids it per push.
 - A k6 smoke on the reference stub, with thresholds, before the API suite gets a performance tier.
 - Firefox and WebKit runs (`BROWSERS=chromium,firefox,webkit`), declared and not yet exercised.
-- A local Conduit as a compose file, replacing the Docker-plus-source script `scripts/conduit-local.sh`.

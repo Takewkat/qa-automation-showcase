@@ -35,25 +35,19 @@ The demo is shared and limits every IP: 5 register or login calls per hour, abou
 The upstream app has no limiter. From the root, with Docker running:
 
 ```
-npm run conduit:local                # terminal 1: Postgres in Docker, the app from source, on http://localhost:3000
+npm run conduit:local                # terminal 1: docker compose up --build, Postgres and the app on http://localhost:3000
 npm run test:local:ui                # terminal 2, from e2e-tests/: UI mode on it (npm run test:e2e:local from the root)
+npm run conduit:local:down           # afterwards
 ```
 
-`npm run conduit:local -- --prepare` does everything but the start, to warm up before a demo. The script (`scripts/conduit-local.sh`) reuses the `conduit-pg` container, the checkout in `~/.cache/qa-automation-showcase/conduit` and its `node_modules` on every call; `CONDUIT_DIR` moves the checkout. What it does, by hand:
+`e2e-tests/local/`: the `Dockerfile` builds the upstream app from source inside the image (production mode: the backend serves the built frontend and `/api` on one port, as the demo does; `CONDUIT_REF` pins a branch or tag), `compose.yml` adds Postgres with a healthcheck and maps the app to port 3000. The first `up --build` takes a few minutes; later ones reuse the image. Without Docker: a Postgres of your own (user, password and database `conduit`), the upstream repo cloned, the `.env` below in its root and in `backend/`, then `npm install && npm run dev` (Vite on 3000 proxies `/api` to the backend on 3001). No `DEV_DB_LOGGING` line: a string there breaks Sequelize's sync and no table is created.
 
-1. `docker run -d --name conduit-pg -e POSTGRES_USER=conduit -e POSTGRES_PASSWORD=conduit -e POSTGRES_DB=conduit -p 5432:5432 postgres:16-alpine`
-2. `git clone https://github.com/TonyMckes/conduit-realworld-example-app.git && cd conduit-realworld-example-app`
-3. The same `.env` in the repo root and in `backend/`, without a `DEV_DB_LOGGING` line (a string there breaks Sequelize's sync and no table is created):
-
-   ```
-   PORT=3001
-   JWT_KEY=any-string
-   DEV_DB_USERNAME=conduit
-   DEV_DB_PASSWORD=conduit
-   DEV_DB_NAME=conduit
-   DEV_DB_HOSTNAME=127.0.0.1
-   DEV_DB_DIALECT=postgres
-   ```
-
-4. `npm install && npm run dev`: the web on `http://localhost:3000`, Vite proxies `/api` to the backend on 3001.
-5. `npm run test:local:run` from this folder, or `npm run test:e2e:local` from the root.
+```
+PORT=3001
+JWT_KEY=any-string
+DEV_DB_USERNAME=conduit
+DEV_DB_PASSWORD=conduit
+DEV_DB_NAME=conduit
+DEV_DB_HOSTNAME=127.0.0.1
+DEV_DB_DIALECT=postgres
+```
