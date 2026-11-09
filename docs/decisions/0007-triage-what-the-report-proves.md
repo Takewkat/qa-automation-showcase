@@ -1,0 +1,7 @@
+# 0007 Triage: the report proves what it can, an agent reads the rest
+
+Context: a red run has four kinds of cause, and only one of them is a test to fix. On the shared demo a 429 looks like a broken page; a status outside the spec looks like a wrong assertion. An agent told to make the run green edits the test whatever the cause, and loops until it is.
+
+Decision: `scripts/triage.mts` sorts what the report proves without judgment: `infra` from the `rate-limited` annotation, a 429 received or no HTTP answer; `contract` from the error text of a response outside its schema in `shared/api/contract.ts`, retried or not; `flaky` from the retry outcome. `no schema for` stays to read: the status check passed first, so the test expected an undocumented status. The `/triage` skill reads only the rest, read-only, from the console the script prints under the table, and calls each `test`, `product`, `infra` or `unsure` with a file:line, a docs row or an artifact as evidence. Only a `test` verdict is fixed by an agent. The authoring skills loop on two verdict lines, the run and the `harness-reviewer` count, at most 3 rounds, then hand back; on the demo there is no rerun. `npm run verify` prints the triage when a suite, traceability or the P1 gate fails.
+
+Consequences: a rate limit or a product bug never becomes a test edit, and a loop cannot run forever or rerun the demo. The triage is as good as the error texts, which is why each one names its endpoint, status or rule. A new failure kind with a fixed text becomes one more rule in the script, not a longer prompt.

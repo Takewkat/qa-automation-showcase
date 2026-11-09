@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# "Done" means this script exits 0: lint, format, types fail fast; both suites, traceability and the P1 gate all run, a failure among them is the exit status.
+# "Done" means this script exits 0: lint, format, types fail fast; both suites, traceability and the P1 gate all run, a failure among them is the exit status; a red run ends with its triage.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -12,4 +12,5 @@ npm run test:api || status=$?
 npm run test:e2e || status=$?
 npm run traceability || status=$?
 npm run report:scenarios || status=$?
+[ "$status" -eq 0 ] || npm run triage || true
 exit "$status"

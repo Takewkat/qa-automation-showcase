@@ -1,18 +1,14 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { ID_PREFIX, lastRun, PARTS, type Spec } from "./results.mts";
+
 /** Reads results.json per part: one line per scenario ID with the priority its tag carries, totals per priority, a P1 gate. */
-const PARTS = [
-  { part: "api-tests", report: "api" },
-  { part: "e2e-tests", report: "e2e" },
-];
-const ID_PREFIX = /^([A-Z]{3,4}-\d{3})\b/;
+const FOLDERS = PARTS.map((report) => ({ part: `${report}-tests`, report }));
 /** The reporter writes tags without their @. */
 const PRIORITY_TAG = /^p[123]$/;
 const WORST = ["unexpected", "flaky", "skipped", "expected"];
 
-type SpecResult = { title: string; tags: string[]; tests: { status: string }[] };
-type Suite = { specs?: SpecResult[]; suites?: Suite[] };
 type Scenario = { priority: string; status: string };
 
 /** The worst of the statuses given, in WORST order; an undefined entry is a scenario not seen yet. */
@@ -23,7 +19,7 @@ function worst(statuses: (string | undefined)[]): string {
 }
 
 /** The scenario after one more of its specs: the priority tag the spec carries, the worst status so far. */
-function merge(seen: Scenario | undefined, spec: SpecResult): Scenario {
+function merge(seen: Scenario | undefined, spec: Spec): Scenario {
   const tag = spec.tags.find((candidate) => PRIORITY_TAG.test(candidate));
   return {
     priority: tag?.toUpperCase() ?? seen?.priority ?? "?",
@@ -33,24 +29,18 @@ function merge(seen: Scenario | undefined, spec: SpecResult): Scenario {
 
 /** Per scenario ID: its priority and the worst status across every spec that carries it and ran at least once. */
 function results(report: string): Map<string, Scenario> {
-  const file = join("reports", report, "results.json");
   const map = new Map<string, Scenario>();
-  if (!existsSync(file)) return map;
-  const walk = (suite: Suite): void => {
-    for (const spec of suite.specs ?? []) {
-      const id = ID_PREFIX.exec(spec.title)?.[1];
-      if (!id || spec.tests.length === 0) continue;
-      map.set(id, merge(map.get(id), spec));
-    }
-    (suite.suites ?? []).forEach(walk);
-  };
-  walk(JSON.parse(readFileSync(file, "utf8")));
+  for (const spec of lastRun(report)?.specs ?? []) {
+    const id = ID_PREFIX.exec(spec.title)?.[1];
+    if (!id || spec.tests.length === 0) continue;
+    map.set(id, merge(map.get(id), spec));
+  }
   return map;
 }
 
 const lines: string[] = [];
 let p1Failures = 0;
-for (const { part, report } of PARTS) {
+for (const { part, report } of FOLDERS) {
   const run = results(report);
   if (run.size === 0) continue;
   lines.push(`## ${part}`, "", "| ID | Priority | Result |", "|---|---|---|");

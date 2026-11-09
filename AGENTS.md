@@ -7,7 +7,7 @@ Read this first, then `api-tests/AGENTS.md` or `e2e-tests/AGENTS.md`. Every rule
 - `api-tests/` Part 1: Job Offer API tests, Playwright `request` + TypeScript. Target: the reference stub, or a deployment through `TEST_ENV` / `API_BASE_URL`.
 - `e2e-tests/` Part 2: Conduit E2E flows, live demo by default. `e2e-tests/local/` a Dockerfile and a compose file for a local Conduit.
 - `shared/` what both parts extend: `api/` the endpoint base and the contract check, `cleanup/` the leftovers report. Imports no part.
-- `config/` the environments table and the reporter set. `scripts/` `verify.sh` the "done" gate, `check-traceability.mts` docs <-> tests by ID and tags, `scenario-report.mts` results per scenario.
+- `config/` the environments table and the reporter set. `scripts/` `verify.sh` the "done" gate, `check-traceability.mts` docs <-> tests by ID and tags, `scenario-report.mts` results per scenario, `triage.mts` the failures by what the report proves, both through `results.mts`.
 - `docs/decisions/` why. `HOMEWORK.md` and `api-tests/spec/` are inputs, never edited.
 
 ## Commands
@@ -20,6 +20,7 @@ npm run test:e2e                    # TEST_ENV=demo by default
 npm run test:<part>:<env>           # api: local, staging; e2e: demo, local. Inside a part: test:<env>:run, test:<env>:ui
 npm run lint:fix                    # eslint --fix + prettier
 npm run traceability                # docs <-> tests by scenario ID, tags by folder, layer, priority and tier (E2E)
+npm run triage                      # the failures of the last run: infra, contract, flaky, or read (/triage)
 ```
 
 Run Claude Code from this folder: hooks and settings load from it. Reports go under `reports/<part>/` (html, json, junit, artifacts), ignored by git; `npm run report:scenarios` exits 1 when a P1 scenario did not pass.
@@ -50,10 +51,11 @@ Run Claude Code from this folder: hooks and settings load from it. Reports go un
 ## Never
 
 - Edit `oracle.ts`, the stub or a docs row to make a test pass. Fix the test, or fix the rule and say which in the commit.
+- Fix a failure `/triage` did not call `test`: every other verdict goes to a person.
 - Silence a lint rule or raise a budget. Split the file.
 - Put data in a shared tenant, or read global lists of the live demo.
 - Add a file that does not demonstrate a practice listed in `README.md`.
 
 ## Writing and `.claude/`
 
-English, ASCII, tables over prose; a doc page starts with what the reader gets. Hooks: `guard-ascii` and `guard-boundaries` block a write that breaks a rule, `lint-touched` runs prettier and `eslint --fix` after it. Skills: `/add-api-scenario`, `/add-e2e-flow`, `/verify`. Agent `harness-reviewer` reviews the diff read-only: run it before done, fix Critical and Major.
+English, ASCII, tables over prose; a doc page starts with what the reader gets. Hooks: `guard-ascii` and `guard-boundaries` block a write that breaks a rule, `lint-touched` runs prettier and `eslint --fix` after it. Skills: `/add-api-scenario`, `/add-e2e-flow` (each ends in a review loop of at most 3 rounds), `/verify`, `/triage` (read-only). Agent `harness-reviewer` reviews the diff read-only: run it before done, fix Critical and Major.

@@ -18,6 +18,7 @@ npm run test:<part>:<env>           # api: local, staging; e2e: demo, local. Ins
 npm run conduit:local               # a local Conduit for Part 2: docker compose up --build, then npm run test:e2e:local
 npx playwright test -c api-tests --grep @error-case   # a layer, a feature (@workflow) or a priority (@p1); -c e2e-tests also a tier (@smoke)
 npm run report:scenarios            # reports/scenarios.md: result per scenario ID, P1 gate
+npm run triage                      # reports/triage.md: each failure infra, contract, flaky, or left to /triage
 ```
 
 Every run opens with `[env] <part> on <env>: <url>`, and the HTML report carries the target in its metadata. `TEST_ENV` picks a row of `config/environments.ts`, `API_BASE_URL` or `WEB_BASE_URL` overrides one target, production is refused.
@@ -40,6 +41,7 @@ Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `
 | 8 | Selectors -> pages -> fixtures -> specs, import direction enforced; shared-demo discipline: one cached session, API seeding, a request budget per test | `e2e-tests/src/`, ADR 0003 |
 | 9 | Docs tied to tests by scenario ID and by tag (folder, layer, priority, tier), both directions | `scripts/check-traceability.mts` |
 | 10 | Agent-ready: one rule source, machine-enforced, executable recipes; the key moments of a test on the console | `AGENTS.md`, `.claude/`, `shared/log.ts` |
+| 11 | Failure triage: a script sorts what the report proves (infra, contract, flaky), an agent reads only the rest and fixes only a test bug; authoring loops end on a verdict line, at most 3 rounds | `scripts/triage.mts`, `.claude/skills/`, ADR 0007 |
 
 Not used, on purpose: a Gherkin layer (no non-technical reader; IDs and page-object methods keep specs readable), a shared World or global cleanup list (fixtures own their data), sleeps (assertions retry), assertions on global lists of the shared demo, a mock replaying examples (Prism: transitions and tenancy would be untestable).
 

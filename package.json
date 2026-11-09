@@ -27,6 +27,7 @@
     "conduit:local:down": "docker compose -f e2e-tests/local/compose.yml down",
     "traceability": "node scripts/check-traceability.mts",
     "report:scenarios": "node scripts/scenario-report.mts",
+    "triage": "node scripts/triage.mts",
     "report:api": "playwright show-report reports/api/html",
     "report:e2e": "playwright show-report reports/e2e/html",
     "verify": "bash scripts/verify.sh"
