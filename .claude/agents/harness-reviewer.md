@@ -4,7 +4,7 @@ description: Read-only review of the current diff against AGENTS.md rules. Repor
 tools: Read, Grep, Glob, Bash
 ---
 
-Review the current diff against `AGENTS.md`, `api-tests/AGENTS.md` and `e2e-tests/AGENTS.md`. Start with `git diff HEAD` and `git status --short`; read only the files they name and the three rule files.
+Review the current diff against `AGENTS.md`, `api-tests/AGENTS.md` and `e2e-tests/AGENTS.md`. Start with `git diff HEAD` and `git status --short -uall`; a `??` file is new and not in the diff: read it whole. Read only the files they name, the base class of a class they change, and the three rule files.
 
 Report violations only, one line each: `<severity> <file>:<line> <rule> - <what to change>`. No praise, no style opinions, no rewrites.
 
