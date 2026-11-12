@@ -38,7 +38,7 @@ Node 24 or newer (runs the scripts and the stub as TypeScript, no build tool); `
 | 5 | A tenant per test: parallel-safe, exact assertions, state-aware teardown | `api-tests/src/fixtures/`, `src/cleanup/`, `shared/cleanup/`, ADR 0001 |
 | 6 | Table-driven matrices: flag combinations, invalid transitions, every operation without a header | `api-tests/tests/` |
 | 7 | Named environments with production refused; one reporter set, reports keyed by scenario ID with a P1 gate | `config/`, `scripts/scenario-report.mts` |
-| 8 | Selectors -> pages -> fixtures -> specs, import direction enforced; shared-demo discipline: one cached session, API seeding, a request budget per test | `e2e-tests/src/`, ADR 0003 |
+| 8 | Selectors -> pages -> fixtures -> specs, import direction enforced; user-facing locators (role, placeholder, text), CSS only where the app gives no handle, lint-enforced; shared-demo discipline: one cached session, API seeding, a request budget per test | `e2e-tests/src/`, ADR 0003, ADR 0008 |
 | 9 | Docs tied to tests by scenario ID and by tag (folder, layer, priority, tier), both directions | `scripts/check-traceability.mts` |
 | 10 | Agent-ready: one rule source, machine-enforced, executable recipes; the key moments of a test on the console | `AGENTS.md`, `.claude/`, `shared/log.ts` |
 | 11 | Failure triage: a script sorts what the report proves (infra, contract, flaky), an agent reads only the rest and fixes only a test bug; authoring loops end on a verdict line, at most 3 rounds | `scripts/triage.mts`, `.claude/skills/`, ADR 0007 |

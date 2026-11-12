@@ -15,14 +15,14 @@ export class TemplatePage extends BasePage {
 
   async publish(title: string) {
     await this.step(`Publish "${title}"`, async () => {
-      await this.page.fill(S.FORM.title, title);
-      await this.page.click(S.FORM.submit);
+      await S.FORM.title(this.page).fill(title);
+      await S.FORM.submit(this.page).click();
     });
   }
 
   async assertItemVisible(title: string) {
     await this.step(`Assert item "${title}" is listed`, async () => {
-      await expect(this.page.locator(S.LIST.itemByTitle(title))).toBeVisible();
+      await expect(S.LIST.itemByTitle(this.page, title)).toBeVisible();
     });
   }
 }

@@ -1,9 +1,14 @@
-/** Selectors of one page: a group per component, camelCase keys, functions for dynamic ones. */
+import type { Page } from "@playwright/test";
+
+/** Locators of one page, (page) => Locator: by role and name, placeholder or text first; a CSS class only to scope what the app gives no role (ADR 0008); a group per component, camelCase keys. */
 export const TEMPLATE_SELECTORS = {
   PATHS: { home: "/", item: (slug: string) => `/item/${slug}` },
-  FORM: { title: 'input[name="title"]', submit: 'button:has-text("Publish")' },
+  FORM: {
+    title: (page: Page) => page.getByPlaceholder("Title"),
+    submit: (page: Page) => page.getByRole("button", { name: "Publish" }),
+  },
   LIST: {
-    items: ".item-preview",
-    itemByTitle: (title: string) => `.item-preview:has(h1:text-is("${title}"))`,
+    itemByTitle: (page: Page, title: string) =>
+      page.getByRole("heading", { name: title, exact: true }),
   },
 } as const;

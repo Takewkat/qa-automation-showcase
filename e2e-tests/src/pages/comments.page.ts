@@ -13,8 +13,8 @@ export class CommentsPage extends BasePage {
 
   async post(text: string) {
     await this.step(`Post the comment "${text}"`, async () => {
-      await this.page.fill(S.FORM.body, text);
-      await this.page.click(S.FORM.post);
+      await S.FORM.body(this.page).fill(text);
+      await S.FORM.post(this.page).click();
     });
   }
 
@@ -22,21 +22,21 @@ export class CommentsPage extends BasePage {
   async delete(text: string) {
     await this.step(`Delete the comment "${text}"`, async () => {
       this.acceptNextDialog();
-      await this.page.locator(S.LIST.cardByText(text)).locator(S.LIST.delete).click();
+      await S.LIST.delete(S.LIST.cardByText(this.page, text)).click();
     });
   }
 
   async assertCommentVisible(text: string, author: string) {
     await this.step(`Assert the comment "${text}" by "${author}"`, async () => {
-      const card = this.page.locator(S.LIST.cardByText(text));
+      const card = S.LIST.cardByText(this.page, text);
       await expect(card).toBeVisible();
-      await expect(card.locator(S.LIST.authorByName(author))).toBeVisible();
+      await expect(S.LIST.author(card, author)).toBeVisible();
     });
   }
 
   async assertNoComment(text: string) {
     await this.step(`Assert no comment "${text}"`, async () => {
-      await expect(this.page.locator(S.LIST.cardByText(text))).toHaveCount(0);
+      await expect(S.LIST.cardByText(this.page, text)).toHaveCount(0);
     });
   }
 }

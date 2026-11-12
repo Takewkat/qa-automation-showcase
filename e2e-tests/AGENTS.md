@@ -10,8 +10,8 @@ spec -> fixtures -> page object -> selectors. API clients are reached through fi
 
 | Path | Holds |
 |---|---|
-| `src/selectors/<page>.selectors.ts` | `<PAGE>_SELECTORS as const`: one group per component, functions for dynamic selectors, no logic |
-| `src/pages/<page>.page.ts` | one class extending `BasePage`, every method one `this.step(title, body)` (a named step that logs itself), assertions prefixed `assert`; `getByRole` is fine here, raw CSS only from the selectors file |
+| `src/selectors/<page>.selectors.ts` | `<PAGE>_SELECTORS as const`: locator factories `(page) => Locator`, by role and name, placeholder or text first, one CSS class only to scope what has no role (ADR 0008); one group per component, no logic |
+| `src/pages/<page>.page.ts` | one class extending `BasePage`, every method one `this.step(title, body)` (a named step that logs itself), assertions prefixed `assert`; every locator comes from the selectors file, never built here |
 | `src/api/` | `conduit-api.ts`: a `Session` (`request`, optional `token`) over `@shared/api/api`, paths under `/api/` on the web base URL, `Authorization: Token` when the session has one, no contract (a precondition call checks its status only); one class per endpoint in `users/`, `profiles/`, `articles/`, `comments/`; `types.ts` flat, `index.ts` the barrel |
 | `src/fixtures/<domain>.fixtures.ts`, `test.ts` | page objects and data of one domain; `test.ts` chains the domains (`auth`, `articles`, `comments`, `social`) and exports `test`. Two page bases: `authPage` and `navbar` sit on the plain `page` (a clean browser, for the one flow that starts logged out); `editorPage`, `articlePage`, `profilePage`, `commentsPage`, `homePage` sit on `authenticatedPage` |
 | `src/setup/auth.setup.ts`, `auth-file.ts` | the `setup` project every browser project depends on: reuses `reports/e2e/.auth/<TEST_ENV>.json` when its token answers `GET /api/user`, else registers one user and writes that storageState; the same for the author SOC-001 follows, in `<TEST_ENV>.author.json`. One user per run, not per test: the demo allows 5 register or login calls per hour per IP, a token never expires, users stay (no delete endpoint) |
@@ -38,9 +38,10 @@ spec -> fixtures -> page object -> selectors. API clients are reached through fi
 |---|---|---|
 | `Test has unknown parameter "editorPage"` | domain not chained in `src/fixtures/test.ts` | add the `.extend()` line |
 | `"ART-001 ..." carries @articles @happy-path; expected @articles, one of ..., one of @p1, @p2, @p3 and one of @smoke, ...` | no tier tag, two, or no layer or priority | one layer, one priority and one tier per test, priority and tier from the docs row |
-| `strict mode violation` | the locator matched several records of the shared demo | scope by own title with the dynamic selector |
+| `strict mode violation` | the locator matched several records of the shared demo, or two elements share a name (an author's avatar and name are both links named after them) | scope by own title with the dynamic selector; tell the twins apart by what the user sees, as `ARTICLE_SELECTORS.META.author` does |
+| `Pages take locators from the selectors file`, `CSS in a selectors file is one class` | a locator built in a page object, or a CSS chain | a factory in the selectors file, by role, placeholder or text (ADR 0008) |
 | `Prefer locator methods instead of page methods` on `xPage.fill(...)` | eslint reads an object named `...Page` as the page | name the action by intent: `write`, `post`, `publish` |
-| a fill is overwritten, or a check passes on an empty list | the screen fills itself after a fetch (`/#/editor/<slug>`), or shows a placeholder first (`.article-preview > em`) | wait in the page object for the prefill or the loaded list, as `openEdit` and `assertArticleNotListed` do |
+| a fill is overwritten, or a check passes on an empty list | the screen fills itself after a fetch (`/#/editor/<slug>`), or shows a placeholder first (`Loading <username> articles...`) | wait in the page object for the prefill or the loaded list, as `openEdit` and `assertArticleNotListed` do |
 | `net::ERR_NAME_NOT_RESOLVED` or 5xx from fly.dev | demo down | `TEST_ENV=local` or `WEB_BASE_URL=...` |
 | a blank page after Sign up or Login, nothing under the navbar | the demo answered 429: 5 register or login calls per hour per IP, about 100 requests per 15 minutes | wait for the window; iterate on `TEST_ENV=local`; never loop a run or `--repeat-each` on the demo |
 | an element appears late | shared demo latency | assertions retry; raise `expect.timeout` in the config only, never a sleep |

@@ -18,7 +18,7 @@ Seven user flows on the Conduit RealWorld demo (`docs/test-scenarios.md`): Playw
 
 | Layer | Path | Holds |
 |---|---|---|
-| selectors | `src/selectors/<page>.selectors.ts` | `<PAGE>_SELECTORS as const`, a group per component, functions for dynamic ones, no logic |
+| selectors | `src/selectors/<page>.selectors.ts` | `<PAGE>_SELECTORS as const`, locator factories by role, placeholder or text, one CSS class only where the app gives no role (ADR 0008); a group per component, no logic |
 | pages | `src/pages/<page>.page.ts` | one class per screen over `BasePage`, every method a named `this.step`, checks named `assert...` |
 | fixtures | `src/fixtures/<domain>.fixtures.ts`, `test.ts` | page objects and data of one domain, chained into the `test` every spec imports |
 | specs | `tests/<domain>/<domain>-<flow>.spec.ts` | one flow each, titled `XXX-000 I can ...`, tagged domain, layer, priority, tier; fixtures and factories only |

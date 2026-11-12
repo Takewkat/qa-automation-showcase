@@ -38,6 +38,7 @@ Run Claude Code from this folder: hooks and settings load from it. Reports go un
 | Random data from `src/test-data/factories.ts` (faker), never `node:crypto` | eslint; hook `guard-boundaries` | `Random data comes from src/test-data/factories.ts` |
 | Created data is known to teardown: the `offers` factory (API), `track(title)` (E2E) | agent `harness-reviewer` | |
 | Only AUTH-001 logs in through the UI; every other E2E spec starts from `authenticatedPage` | agent `harness-reviewer` | |
+| E2E locators live in `src/selectors/`: by role and name, placeholder or text; CSS is one class scoping what the app gives no role (ADR 0008); a page object never builds one | eslint | `Pages take locators from the selectors file`, `CSS in a selectors file is one class` |
 | No magic number in a page object | eslint `no-magic-numbers` | `No magic number` |
 | Budgets: 120 lines (`src`), 60 (specs), 150 (`stub`), 40 per function, complexity 8; no disable directive | eslint | split the file, never raise the budget |
 | One-line JSDoc on exports only; no inline comment, no TODO | eslint `jsdoc/*` | the why goes to `docs/decisions/` or the commit |

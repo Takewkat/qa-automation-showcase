@@ -11,21 +11,21 @@ export class NavbarPage extends BasePage {
 
   async logout() {
     await this.step("Log out from the user menu", async () => {
-      await this.page.click(S.USER_MENU.toggle);
-      await this.page.click(S.USER_MENU.logout);
+      await S.USER_MENU.toggle(this.page).click();
+      await S.USER_MENU.logout(this.page).click();
     });
   }
 
   async assertLoggedInAs(username: string) {
     await this.step(`Assert the navbar shows "${username}"`, async () => {
-      await expect(this.page.locator(S.USER_MENU.toggleByName(username))).toBeVisible();
+      await expect(S.USER_MENU.toggleByName(this.page, username)).toBeVisible();
     });
   }
 
   async assertLoggedOut() {
     await this.step("Assert the navbar offers Login", async () => {
-      await expect(this.page.locator(S.LINKS.login)).toBeVisible();
-      await expect(this.page.locator(S.USER_MENU.toggle)).toHaveCount(0);
+      await expect(S.LINKS.login(this.page)).toBeVisible();
+      await expect(S.USER_MENU.toggle(this.page)).toHaveCount(0);
     });
   }
 }

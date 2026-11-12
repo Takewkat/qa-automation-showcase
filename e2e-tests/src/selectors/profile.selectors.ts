@@ -1,14 +1,20 @@
-/** The profile page: the follow button of another author (its icon tells Follow from Unfollow, whose text contains Follow), the list of own articles; a preview without an em is a loaded one, not the placeholder. */
+import type { Page } from "@playwright/test";
+
+/** The profile page: its user's name is an h4; the button of an author reads Follow or Unfollow, then the username and a count, a case-sensitive word tells them apart; an own article by its title heading; a preview has no role, the list is loaded once one stops reading Loading. */
 export const PROFILE_SELECTORS = {
   PATHS: { profile: (username: string) => `/#/profile/${username}` },
   USER_INFO: {
-    follow: (username: string) =>
-      `.profile-page .user-info:has(h4:text-is("${username}")) button.action-btn:has(i.ion-plus-round)`,
-    unfollow: (username: string) =>
-      `.profile-page .user-info:has(h4:text-is("${username}")) button.action-btn:has(i.ion-minus-round)`,
+    name: (page: Page, username: string) =>
+      page.getByRole("heading", { level: 4, name: username, exact: true }),
+    follow: (page: Page, username: string) =>
+      page.getByRole("button", { name: new RegExp(`\\bFollow ${username}\\b`) }),
+    unfollow: (page: Page, username: string) =>
+      page.getByRole("button", { name: new RegExp(`\\bUnfollow ${username}\\b`) }),
   },
   ARTICLES: {
-    loaded: ".profile-page .article-preview:not(:has(em))",
-    previewByTitle: (title: string) => `.profile-page .article-preview:has(h1:text-is("${title}"))`,
+    loaded: (page: Page) =>
+      page.locator(".article-preview").filter({ hasNotText: "Loading" }).first(),
+    articleTitle: (page: Page, title: string) =>
+      page.getByRole("heading", { name: title, exact: true }),
   },
 } as const;

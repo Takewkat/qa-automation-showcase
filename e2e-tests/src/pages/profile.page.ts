@@ -13,32 +13,36 @@ export class ProfilePage extends BasePage {
   }
 
   async openOwn() {
-    await this.goto(S.PATHS.profile(this.username));
+    await this.openOf(this.username);
   }
 
+  /** Waits for the user's name: a hash change keeps the previous screen, its headings included, until the profile renders. */
   async openOf(username: string) {
     await this.goto(S.PATHS.profile(username));
+    await this.step(`Wait for the profile of ${username}`, async () => {
+      await expect(S.USER_INFO.name(this.page, username)).toBeVisible();
+    });
   }
 
   /** Waits for the button to turn into Unfollow: the follow is saved before the next screen reads it. */
   async follow(username: string) {
     await this.step(`Follow ${username}`, async () => {
-      await this.page.click(S.USER_INFO.follow(username));
-      await expect(this.page.locator(S.USER_INFO.unfollow(username))).toBeVisible();
+      await S.USER_INFO.follow(this.page, username).click();
+      await expect(S.USER_INFO.unfollow(this.page, username)).toBeVisible();
     });
   }
 
   async assertArticleListed(title: string) {
     await this.step(`Assert the profile lists "${title}"`, async () => {
-      await expect(this.page.locator(S.ARTICLES.previewByTitle(title))).toBeVisible();
+      await expect(S.ARTICLES.articleTitle(this.page, title)).toBeVisible();
     });
   }
 
   /** Waits for the list to load first: an empty match before that would prove nothing. */
   async assertArticleNotListed(title: string) {
     await this.step(`Assert the profile does not list "${title}"`, async () => {
-      await expect(this.page.locator(S.ARTICLES.loaded).first()).toBeVisible();
-      await expect(this.page.locator(S.ARTICLES.previewByTitle(title))).toHaveCount(0);
+      await expect(S.ARTICLES.loaded(this.page)).toBeVisible();
+      await expect(S.ARTICLES.articleTitle(this.page, title)).toHaveCount(0);
     });
   }
 }

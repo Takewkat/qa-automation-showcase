@@ -20,24 +20,24 @@ export class AuthPage extends BasePage {
 
   async signUp({ username, email, password }: NewUser) {
     await this.step(`Sign up as "${username}"`, async () => {
-      await this.page.fill(S.FORM.username, username);
-      await this.page.fill(S.FORM.email, email);
-      await this.page.fill(S.FORM.password, password);
-      await this.page.click(S.FORM.signUp);
+      await S.FORM.username(this.page).fill(username);
+      await S.FORM.email(this.page).fill(email);
+      await S.FORM.password(this.page).fill(password);
+      await S.FORM.signUp(this.page).click();
     });
   }
 
   async login({ email, password }: Credentials) {
     await this.step(`Log in as "${email}"`, async () => {
-      await this.page.fill(S.FORM.email, email);
-      await this.page.fill(S.FORM.password, password);
-      await this.page.click(S.FORM.login);
+      await S.FORM.email(this.page).fill(email);
+      await S.FORM.password(this.page).fill(password);
+      await S.FORM.login(this.page).click();
     });
   }
 
   async assertError(text: string) {
     await this.step(`Assert the error "${text}"`, async () => {
-      await expect(this.page.locator(S.ERRORS.item)).toHaveText(text);
+      await expect(S.ERRORS.item(this.page)).toHaveText(text);
     });
   }
 }

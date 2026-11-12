@@ -19,27 +19,27 @@ export class EditorPage extends BasePage {
   async openEdit(slug: string) {
     await this.goto(S.PATHS.edit(slug));
     await this.step("Wait for the form to be prefilled", async () => {
-      await expect(this.page.locator(S.FORM.title)).not.toHaveValue("");
+      await expect(S.FORM.title(this.page)).not.toHaveValue("");
     });
   }
 
   async write({ title, description, body }: NewArticle) {
     await this.step(`Write "${title}" in the editor`, async () => {
-      await this.page.fill(S.FORM.title, title);
-      await this.page.fill(S.FORM.description, description);
-      await this.page.fill(S.FORM.body, body);
+      await S.FORM.title(this.page).fill(title);
+      await S.FORM.description(this.page).fill(description);
+      await S.FORM.body(this.page).fill(body);
     });
   }
 
   async publish() {
     await this.step("Publish the article", async () => {
-      await this.page.click(S.FORM.publish);
+      await S.FORM.publish(this.page).click();
     });
   }
 
   async update() {
     await this.step("Update the article", async () => {
-      await this.page.click(S.FORM.update);
+      await S.FORM.update(this.page).click();
     });
   }
 

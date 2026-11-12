@@ -6,6 +6,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 import { BOUNDARIES } from "./eslint.boundaries.mjs";
+import { LOCATORS } from "./eslint.locators.mjs";
 
 /** Size budgets: a file or function past the budget is split, never silenced. */
 const lines = (max) => ["error", { max, skipBlankLines: true, skipComments: true }];
@@ -100,4 +101,5 @@ export default tseslint.config(
     files: ["e2e-tests/src/pages/**/*.ts"],
     rules: { "no-magic-numbers": ["error", { ignore: [0, 1, -1], enforceConst: true }] },
   },
+  ...LOCATORS,
 );

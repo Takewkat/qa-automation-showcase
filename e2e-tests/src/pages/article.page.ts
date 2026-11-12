@@ -18,7 +18,7 @@ export class ArticlePage extends BasePage {
   async delete() {
     await this.step("Delete the article", async () => {
       this.acceptNextDialog();
-      await this.page.locator(S.META.delete).first().click();
+      await S.META.delete(this.page).click();
     });
   }
 
@@ -30,19 +30,19 @@ export class ArticlePage extends BasePage {
 
   async assertTitle(title: string) {
     await this.step(`Assert the title "${title}"`, async () => {
-      await expect(this.page.locator(S.BANNER.title)).toHaveText(title);
+      await expect(S.BANNER.title(this.page)).toHaveText(title);
     });
   }
 
   async assertBody(body: string) {
     await this.step("Assert the body", async () => {
-      await expect(this.page.locator(S.BODY.content)).toContainText(body);
+      await expect(S.BODY.content(this.page)).toContainText(body);
     });
   }
 
   async assertAuthor(username: string) {
     await this.step(`Assert the author "${username}"`, async () => {
-      await expect(this.page.locator(S.META.author).first()).toHaveText(username);
+      await expect(S.META.author(this.page, username)).toBeVisible();
     });
   }
 }

@@ -1,11 +1,13 @@
-/** The article editor, new or by slug: fields found by name, the submit button reads Publish or Update. */
+import type { Page } from "@playwright/test";
+
+/** The article editor, new or by slug: fields by placeholder, the app gives them no label; the submit button reads Publish Article or Update Article. */
 export const EDITOR_SELECTORS = {
   PATHS: { new: "/#/editor", edit: (slug: string) => `/#/editor/${slug}` },
   FORM: {
-    title: '.editor-page input[name="title"]',
-    description: '.editor-page input[name="description"]',
-    body: '.editor-page textarea[name="body"]',
-    publish: '.editor-page button[type="submit"]:has-text("Publish Article")',
-    update: '.editor-page button[type="submit"]:has-text("Update Article")',
+    title: (page: Page) => page.getByPlaceholder("Article Title"),
+    description: (page: Page) => page.getByPlaceholder("What's this article about?"),
+    body: (page: Page) => page.getByPlaceholder("Write your article (in markdown)"),
+    publish: (page: Page) => page.getByRole("button", { name: "Publish Article" }),
+    update: (page: Page) => page.getByRole("button", { name: "Update Article" }),
   },
 } as const;

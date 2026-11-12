@@ -13,13 +13,13 @@ export class HomePage extends BasePage {
   async openYourFeed() {
     await this.goto(NAVBAR_SELECTORS.PATHS.home);
     await this.step("Open Your Feed", async () => {
-      await this.page.click(S.FEED.yourFeed);
+      await S.FEED.yourFeed(this.page).click();
     });
   }
 
   async assertArticleListed(title: string) {
     await this.step(`Assert Your Feed lists "${title}"`, async () => {
-      await expect(this.page.locator(S.FEED.previewByTitle(title))).toBeVisible();
+      await expect(S.FEED.articleTitle(this.page, title)).toBeVisible();
     });
   }
 }
