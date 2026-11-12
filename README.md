@@ -3,7 +3,7 @@
 Two test suites for a QA automation take-home (`HOMEWORK.md`), written so that a team or an agent extends them without asking.
 
 - `api-tests/` Part 1: API suite for a job-offer microservice that exists only as an OpenAPI document. Playwright `request` + TypeScript, every response validated against the spec, a reference stub keeps the suite green on a clean clone. Scenarios, rationale and assumptions: `api-tests/docs/test-scenarios.md`; how to run: `api-tests/README.md`.
-- `e2e-tests/` Part 2: six user flows in three domains on the Conduit RealWorld demo. Playwright, page objects behind fixtures, API-seeded data, one cached user per run. Scenarios, rationale and assumptions: `e2e-tests/docs/test-scenarios.md`; how to run: `e2e-tests/README.md`.
+- `e2e-tests/` Part 2: seven user flows in four domains on the Conduit RealWorld demo. Playwright, page objects behind fixtures, API-seeded data, one cached user per run. Scenarios, rationale and assumptions: `e2e-tests/docs/test-scenarios.md`; how to run: `e2e-tests/README.md`.
 
 Status: the harness, Part 1 and Part 2 are in; both suites green on their default target.
 
@@ -51,7 +51,7 @@ Planned and written with Claude Code, every file read before it was kept. The au
 
 ## Next steps
 
-- The six designed-only E2E rows of `e2e-tests/docs/test-scenarios.md` (AUTH-002, ART-004, SOC-001, CMT-003, NAV-001, NAV-002), and the "Left out" list of Part 1.
+- The five designed-only E2E rows of `e2e-tests/docs/test-scenarios.md` (AUTH-002, ART-004, CMT-003, NAV-001, NAV-002), and the "Left out" list of Part 1.
 - A CI gate on `scripts/verify.sh`: the API part on every push, the E2E part on a manual trigger, since the demo's budget forbids it per push.
 - A k6 smoke on the reference stub, with thresholds, before the API suite gets a performance tier.
 - Firefox and WebKit runs (`BROWSERS=chromium,firefox,webkit`), declared and not yet exercised.

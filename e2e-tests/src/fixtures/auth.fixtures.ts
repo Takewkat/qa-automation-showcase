@@ -20,11 +20,10 @@ export type AuthFixtures = {
   navbar: NavbarPage;
 };
 
-/** The user cached for the target, or a failure naming the project that writes it. */
-const cachedUser = (baseURL: string | undefined): ApiUser => {
-  const user = readCachedUser(baseURL);
-  if (!user)
-    throw new Error(`${AUTH_FILE} has no user for ${baseURL}: the setup project writes it`);
+/** The user cached in that file for the target, or a failure naming the project that writes it. */
+export const cachedUser = (baseURL: string | undefined, file: string): ApiUser => {
+  const user = readCachedUser(baseURL, file);
+  if (!user) throw new Error(`${file} has no user for ${baseURL}: the setup project writes it`);
   return { username: user.username, email: user.email, token: user.token };
 };
 
@@ -35,7 +34,7 @@ export const authFixtures: Fixtures<
   { request: APIRequestContext; baseURL?: string; page: Page; context: BrowserContext },
   { browser: Browser }
 > = {
-  apiUser: ({ baseURL }, use) => use(cachedUser(baseURL)),
+  apiUser: ({ baseURL }, use) => use(cachedUser(baseURL, AUTH_FILE)),
   session: ({ request, apiUser }, use) => use({ request, token: apiUser.token }),
   anonymous: ({ request }, use) => use({ request }),
   context: async ({ context, baseURL }, use, info) => {

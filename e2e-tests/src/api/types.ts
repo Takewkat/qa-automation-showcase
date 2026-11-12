@@ -52,6 +52,7 @@ export type UserResponse = { user: User };
 export type ArticleResponse = { article: Article };
 /** A page of articles, newest first; articlesCount is inflated by the tag join, count the array. */
 export type ArticlesResponse = { articles: Article[]; articlesCount: number };
+export type ProfileResponse = { profile: Profile };
 export type CommentResponse = { comment: Comment };
 export type CommentsResponse = { comments: Comment[] };
 /** Every error of the API, whatever the status. */

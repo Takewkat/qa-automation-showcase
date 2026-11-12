@@ -1,9 +1,11 @@
-import { test as setup } from "@playwright/test";
+import { test as setup, type APIRequestContext } from "@playwright/test";
 
 import { GetCurrentUser, RegisterUser, type Session } from "@e2e/api";
 import {
-  AUTH_FILE_LABEL,
+  AUTH_FILE,
+  AUTHOR_FILE,
   cachedSince,
+  labelOf,
   originOf,
   readCachedUser,
   writeCachedUser,
@@ -20,17 +22,31 @@ const loggedIn = async (session: Session): Promise<boolean> => {
   return get.getStatusCode() === get.correctStatusCode;
 };
 
-/** One user per run, reused by the next ones: the demo allows 5 register or login calls per hour per IP, and a token never expires. */
-setup("the run's user is cached, or registered once", async ({ request, baseURL }) => {
+/** The user cached in that file while its token answers, else one registered and cached there. */
+const cachedOrRegistered = async (
+  request: APIRequestContext,
+  baseURL: string | undefined,
+  file: string,
+): Promise<void> => {
   const origin = originOf(baseURL);
-  const cached = readCachedUser(baseURL);
+  const cached = readCachedUser(baseURL, file);
   if (cached && (await loggedIn({ request, token: cached.token }))) {
-    const since = cachedSince();
-    log("setup", `${cached.username} reused on ${origin}: ${AUTH_FILE_LABEL}, cached ${since}`);
+    const since = cachedSince(file);
+    log("setup", `${cached.username} reused on ${origin}: ${labelOf(file)}, cached ${since}`);
     return;
   }
   const { user } = await new RegisterUser({ request }).register({ user: uniqueUser() });
-  writeCachedUser(baseURL, user);
-  const where = `registered on ${origin}, session cached in ${AUTH_FILE_LABEL}`;
+  writeCachedUser(baseURL, user, file);
+  const where = `registered on ${origin}, session cached in ${labelOf(file)}`;
   log("setup", `${user.username} (${user.email}) ${where}`);
-});
+};
+
+/** One user per run, reused by the next ones: the demo allows 5 register or login calls per hour per IP, and a token never expires. */
+setup("the run's user is cached, or registered once", ({ request, baseURL }) =>
+  cachedOrRegistered(request, baseURL, AUTH_FILE),
+);
+
+/** The author the run's user follows in SOC-001: a second user, cached the same way. */
+setup("the author is cached, or registered once", ({ request, baseURL }) =>
+  cachedOrRegistered(request, baseURL, AUTHOR_FILE),
+);

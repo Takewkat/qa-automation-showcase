@@ -1,6 +1,6 @@
 # e2e-tests: Conduit E2E flows
 
-Six user flows on the Conduit RealWorld demo (`docs/test-scenarios.md`): Playwright, page objects behind fixtures, data seeded through the API, one user per run. Rules for people and agents: `AGENTS.md`.
+Seven user flows on the Conduit RealWorld demo (`docs/test-scenarios.md`): Playwright, page objects behind fixtures, data seeded through the API, one user per run. Rules for people and agents: `AGENTS.md`.
 
 ## Run
 

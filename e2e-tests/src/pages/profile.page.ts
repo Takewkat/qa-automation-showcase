@@ -3,7 +3,7 @@ import { expect, type Page } from "@playwright/test";
 import { BasePage } from "@e2e/pages/base.page";
 import { PROFILE_SELECTORS as S } from "@e2e/selectors/profile.selectors";
 
-/** The profile of the run's user: the articles it lists, found by title. */
+/** A profile: the run's user's own and the articles it lists, found by title, or another author's to follow. */
 export class ProfilePage extends BasePage {
   constructor(
     page: Page,
@@ -14,6 +14,18 @@ export class ProfilePage extends BasePage {
 
   async openOwn() {
     await this.goto(S.PATHS.profile(this.username));
+  }
+
+  async openOf(username: string) {
+    await this.goto(S.PATHS.profile(username));
+  }
+
+  /** Waits for the button to turn into Unfollow: the follow is saved before the next screen reads it. */
+  async follow(username: string) {
+    await this.step(`Follow ${username}`, async () => {
+      await this.page.click(S.USER_INFO.follow(username));
+      await expect(this.page.locator(S.USER_INFO.unfollow(username))).toBeVisible();
+    });
   }
 
   async assertArticleListed(title: string) {
